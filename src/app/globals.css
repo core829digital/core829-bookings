@@ -65,4 +65,12 @@
   .kicker {
     @apply font-mono text-xs uppercase tracking-[0.25em] text-accent;
   }
+
+  .tech-label {
+    @apply font-mono text-xs uppercase tracking-[0.2em] text-foreground-muted;
+  }
+
+  .link-ghost {
+    @apply relative inline-flex items-center gap-2 text-foreground no-underline hover:text-accent;
+  }
 }

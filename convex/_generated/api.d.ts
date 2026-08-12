@@ -9,7 +9,15 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as authz from "../authz.js";
+import type * as availability from "../availability.js";
+import type * as bookings from "../bookings.js";
+import type * as emails from "../emails.js";
+import type * as eventTypes from "../eventTypes.js";
 import type * as http from "../http.js";
+import type * as lib_slotEngine from "../lib/slotEngine.js";
+import type * as seed from "../seed.js";
+import type * as slots from "../slots.js";
 import type * as users from "../users.js";
 
 import type {
@@ -20,7 +28,15 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  authz: typeof authz;
+  availability: typeof availability;
+  bookings: typeof bookings;
+  emails: typeof emails;
+  eventTypes: typeof eventTypes;
   http: typeof http;
+  "lib/slotEngine": typeof lib_slotEngine;
+  seed: typeof seed;
+  slots: typeof slots;
   users: typeof users;
 }>;
 
