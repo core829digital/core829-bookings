@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useMutation, useQuery } from "convex/react";
+import { useState } from "react";
 import { api } from "../../../../convex/_generated/api";
-import { Button } from "@/components/ui/Button";
 
 export default function OrganizationPage() {
   const orgs = useQuery(api.organizations.list);
