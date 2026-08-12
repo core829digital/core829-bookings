@@ -1,26 +1,68 @@
 @import "tailwindcss";
 
+/* ============================================================
+   CORE829 — DESIGN TOKEN (mirrors core829-new-final, vincolante)
+   ============================================================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-background: #ffffff;
+  --color-foreground: #1a1a1a;
+  --color-foreground-muted: #4a4a4a;
+  --color-accent: #e11d2e;
+  --color-accent-hover: #c4121f;
+  --color-border: #e5e5e5;
+  --color-surface: #f7f7f7;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+  --color-foreground-muted: var(--color-foreground-muted);
+  --color-accent: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
+  --color-border: var(--color-border);
+  --color-surface: var(--color-surface);
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", monospace;
+  --container-container: 76rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: #ffffff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 600;
+    letter-spacing: -0.02em;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .input-core829 {
+    @apply w-full rounded-none border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-foreground-muted placeholder:opacity-60 transition-colors focus:border-foreground focus:outline-none;
+  }
+
+  .kicker {
+    @apply font-mono text-xs uppercase tracking-[0.25em] text-accent;
+  }
 }
