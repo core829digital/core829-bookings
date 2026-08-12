@@ -82,5 +82,7 @@ export default defineSchema({
   })
     .index("by_host_and_time", ["hostUserId", "startTime"])
     .index("by_cancelToken", ["cancelToken"])
-    .index("by_eventType_and_time", ["eventTypeId", "startTime"]),
+    .index("by_eventType_and_time", ["eventTypeId", "startTime"])
+    // Backs the reminder cron's scan across all hosts (convex/reminders.ts).
+    .index("by_status_and_startTime", ["status", "startTime"]),
 });

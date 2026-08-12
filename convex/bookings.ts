@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
+import { requireTeamUser } from "./authz";
 
 function generateCancelToken(): string {
   return `${crypto.randomUUID()}${crypto.randomUUID()}`.replace(/-/g, "");
@@ -201,5 +202,93 @@ export const reschedule = mutation({
     });
 
     return { bookingId, cancelToken: newCancelToken };
+  },
+});
+
+// Team-only from here down.
+export const listMineForRange = query({
+  args: { fromTime: v.number(), toTime: v.number() },
+  handler: async (ctx, { fromTime, toTime }) => {
+    const user = await requireTeamUser(ctx);
+    return await ctx.db
+      .query("bookings")
+      .withIndex("by_host_and_time", (q) =>
+        q.eq("hostUserId", user._id).gte("startTime", fromTime).lte("startTime", toTime)
+      )
+      .collect();
+  },
+});
+
+// A team member books directly on behalf of someone (phone call, walk-in,
+// etc.) — same overlap/policy checks as the public flow, just skipping the
+// invitee-facing slot picker.
+export const createManual = mutation({
+  args: {
+    eventTypeId: v.id("eventTypes"),
+    startTime: v.number(),
+    inviteeName: v.string(),
+    inviteeEmail: v.string(),
+    inviteeTimezone: v.string(),
+    notes: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const user = await requireTeamUser(ctx);
+    const eventType = await ctx.db.get(args.eventTypeId);
+    if (eventType === null || eventType.ownerUserId !== user._id) {
+      throw new Error("Event type not found");
+    }
+
+    const now = Date.now();
+    const endTime = args.startTime + eventType.durationMinutes * 60_000;
+
+    await assertNoOverlap(
+      ctx,
+      user._id,
+      args.startTime,
+      endTime,
+      eventType.bufferBeforeMinutes,
+      eventType.bufferAfterMinutes
+    );
+
+    const cancelToken = generateCancelToken();
+    const bookingId = await ctx.db.insert("bookings", {
+      eventTypeId: eventType._id,
+      hostUserId: user._id,
+      startTime: args.startTime,
+      endTime,
+      inviteeName: args.inviteeName,
+      inviteeEmail: args.inviteeEmail,
+      inviteeTimezone: args.inviteeTimezone,
+      notes: args.notes,
+      status: "confirmed",
+      cancelToken,
+      remindersSent: [],
+      createdAt: now,
+    });
+
+    await ctx.scheduler.runAfter(0, internal.emails.sendBookingConfirmation, {
+      inviteeName: args.inviteeName,
+      inviteeEmail: args.inviteeEmail,
+      inviteeTimezone: args.inviteeTimezone,
+      eventTypeName: eventType.name,
+      startTime: args.startTime,
+      endTime,
+      cancelToken,
+    });
+
+    return { bookingId, cancelToken };
+  },
+});
+
+export const cancelAsHost = mutation({
+  args: { bookingId: v.id("bookings") },
+  handler: async (ctx, { bookingId }) => {
+    const user = await requireTeamUser(ctx);
+    const booking = await ctx.db.get(bookingId);
+    if (booking === null || booking.hostUserId !== user._id) {
+      throw new Error("Booking not found");
+    }
+    if (booking.status !== "confirmed") throw new Error("Booking already cancelled");
+    await ctx.db.patch(bookingId, { status: "cancelled" });
   },
 });

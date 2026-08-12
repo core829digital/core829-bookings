@@ -4,7 +4,14 @@ import {
   nextjsMiddlewareRedirect,
 } from "@convex-dev/auth/nextjs/server";
 
-const isTeamRoute = createRouteMatcher(["/calendar", "/calendar/(.*)", "/availability", "/team"]);
+const isTeamRoute = createRouteMatcher([
+  "/calendar",
+  "/calendar/(.*)",
+  "/event-types",
+  "/event-types/(.*)",
+  "/availability",
+  "/team",
+]);
 const isSignInPage = createRouteMatcher(["/signin"]);
 
 export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
