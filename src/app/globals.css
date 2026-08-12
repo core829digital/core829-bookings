@@ -21,7 +21,7 @@
   --color-accent-hover: var(--color-accent-hover);
   --color-border: var(--color-border);
   --color-surface: var(--color-surface);
-  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-jetbrains), ui-monospace, "SFMono-Regular", monospace;
   --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", monospace;
   --container-container: 76rem;
 }

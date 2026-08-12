@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Button } from "@/components/ui/Button";
@@ -15,6 +16,13 @@ export default function SignInPage() {
   return (
     <main className="flex flex-1 items-center justify-center px-6 py-24">
       <div className="w-full max-w-sm">
+        <Image
+          src="/core829branding/core829-logo.webp"
+          alt="CORE829"
+          width={56}
+          height={56}
+          className="mx-auto mb-8"
+        />
         <div className="mb-6 flex border border-border">
           <button
             type="button"
