@@ -26,7 +26,32 @@ export const listActive = query({
   args: {},
   handler: async (ctx) => {
     const all = await ctx.db.query("eventTypes").collect();
-    return all.filter((e) => e.active);
+    return all.filter((e) => e.active && e.organizationId === undefined);
+  },
+});
+
+// Public: an organization's hosted page (/o/[slug]) — only what's needed to
+// render a list of bookable event types, no internal fields.
+export const listByOrganizationSlug = query({
+  args: { organizationSlug: v.string() },
+  handler: async (ctx, { organizationSlug }) => {
+    const org = await ctx.db
+      .query("organizations")
+      .withIndex("by_slug", (q) => q.eq("slug", organizationSlug))
+      .unique();
+    if (org === null) return null;
+
+    const all = await ctx.db.query("eventTypes").collect();
+    const eventTypes = all
+      .filter((e) => e.active && e.organizationId === org._id)
+      .map((e) => ({
+        slug: e.slug,
+        name: e.name,
+        description: e.description,
+        durationMinutes: e.durationMinutes,
+        location: e.location,
+      }));
+    return { organizationName: org.name, eventTypes };
   },
 });
 
@@ -54,9 +79,21 @@ export const create = mutation({
     bufferAfterMinutes: v.number(),
     minNoticeMinutes: v.number(),
     maxAdvanceDays: v.number(),
+    // Leave unset for an internal CORE829 event type. Setting it publishes
+    // the event type on that organization's hosted page (/o/[slug]) —
+    // reserved to owner/admin since it's assigning work to a client account.
+    organizationId: v.optional(v.id("organizations")),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, { organizationId, ...args }) => {
     const user = await requireTeamUser(ctx);
+
+    if (organizationId !== undefined) {
+      if (user.role !== "owner" && user.role !== "admin") {
+        throw new Error("Only an owner/admin can assign an event type to an organization");
+      }
+      const org = await ctx.db.get(organizationId);
+      if (org === null) throw new Error("Organization not found");
+    }
 
     const existing = await ctx.db
       .query("eventTypes")
@@ -66,6 +103,7 @@ export const create = mutation({
 
     return await ctx.db.insert("eventTypes", {
       ...args,
+      organizationId,
       ownerUserId: user._id,
       active: true,
     });

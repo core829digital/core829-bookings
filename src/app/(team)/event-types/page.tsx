@@ -15,9 +15,13 @@ const LOCATIONS = [
 
 export default function EventTypesPage() {
   const eventTypes = useQuery(api.eventTypes.listMine);
+  const organizations = useQuery(api.organizations.list);
   const update = useMutation(api.eventTypes.update);
   const remove = useMutation(api.eventTypes.remove);
   const [showForm, setShowForm] = useState(false);
+
+  const orgNameById = new Map((organizations ?? []).map((o) => [o.org._id, o.org.name]));
+  const orgSlugById = new Map((organizations ?? []).map((o) => [o.org._id, o.org.slug]));
 
   return (
     <div>
@@ -53,7 +57,16 @@ export default function EventTypesPage() {
                     <span className="ml-2 text-sm text-foreground-muted">(disattivato)</span>
                   )}
                 </p>
-                <p className="text-sm text-foreground-muted">/book/{et.slug}</p>
+                <p className="text-sm text-foreground-muted">
+                  /book/{et.slug}
+                  {et.organizationId && (
+                    <>
+                      {" · "}
+                      {orgNameById.get(et.organizationId) ?? "organizzazione"} (/o/
+                      {orgSlugById.get(et.organizationId) ?? "…"})
+                    </>
+                  )}
+                </p>
               </div>
               <div className="flex gap-2">
                 <Button
@@ -80,14 +93,19 @@ export default function EventTypesPage() {
 }
 
 function NewEventTypeForm({ onDone }: { onDone: () => void }) {
+  const currentUser = useQuery(api.users.current);
+  const organizations = useQuery(api.organizations.list);
   const create = useMutation(api.eventTypes.create);
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [durationMinutes, setDurationMinutes] = useState(30);
   const [location, setLocation] = useState<(typeof LOCATIONS)[number]["value"]>("google_meet");
   const [description, setDescription] = useState("");
+  const [organizationId, setOrganizationId] = useState<Id<"organizations"> | "">("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const canAssignOrg = currentUser?.role === "owner" || currentUser?.role === "admin";
 
   return (
     <form
@@ -106,6 +124,7 @@ function NewEventTypeForm({ onDone }: { onDone: () => void }) {
           bufferAfterMinutes: 5,
           minNoticeMinutes: 60,
           maxAdvanceDays: 30,
+          organizationId: organizationId || undefined,
         })
           .then(() => onDone())
           .catch(() => setError("Slug già in uso."))
@@ -154,6 +173,20 @@ function NewEventTypeForm({ onDone }: { onDone: () => void }) {
         onChange={(e) => setDescription(e.target.value)}
         rows={2}
       />
+      {canAssignOrg && (
+        <select
+          className="input-core829 sm:col-span-2"
+          value={organizationId}
+          onChange={(e) => setOrganizationId(e.target.value as Id<"organizations">)}
+        >
+          <option value="">CORE829 (interno) — su /book/{slug || "slug"}</option>
+          {(organizations ?? []).map(({ org }) => (
+            <option key={org._id} value={org._id}>
+              {org.name} — su /o/{org.slug}
+            </option>
+          ))}
+        </select>
+      )}
       {error && <p className="text-sm text-accent sm:col-span-2">{error}</p>}
       <Button type="submit" disabled={submitting} className="sm:col-span-2">
         Crea

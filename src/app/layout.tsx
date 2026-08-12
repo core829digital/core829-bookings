@@ -10,8 +10,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Prenota | CORE829",
-  description: "Sistema di booking CORE829 — prenota un appuntamento con il team.",
+  title: "CORE829 Bookings — Prenota un appuntamento online",
+  description:
+    "Il sistema di prenotazione di CORE829: calendario in tempo reale, promemoria automatici e API per integrare il booking in qualsiasi sito.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
