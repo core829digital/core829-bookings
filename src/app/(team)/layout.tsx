@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: "/calendar", label: "Calendario" },
   { href: "/event-types", label: "Tipi di appuntamento" },
   { href: "/availability", label: "Disponibilità" },
+  { href: "/organizations", label: "Organizzazioni" },
   { href: "/team", label: "Team" },
 ];
 

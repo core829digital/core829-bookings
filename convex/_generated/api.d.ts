@@ -16,11 +16,16 @@ import type * as crons from "../crons.js";
 import type * as emails from "../emails.js";
 import type * as eventTypes from "../eventTypes.js";
 import type * as http from "../http.js";
+import type * as internal_bookings from "../internal/bookings.js";
+import type * as lib_apiKeys from "../lib/apiKeys.js";
+import type * as lib_rateLimit from "../lib/rateLimit.js";
 import type * as lib_slotEngine from "../lib/slotEngine.js";
+import type * as organizations from "../organizations.js";
 import type * as reminders from "../reminders.js";
 import type * as seed from "../seed.js";
 import type * as slots from "../slots.js";
 import type * as users from "../users.js";
+import type * as webhooks from "../webhooks.js";
 
 import type {
   ApiFromModules,
@@ -37,11 +42,16 @@ declare const fullApi: ApiFromModules<{
   emails: typeof emails;
   eventTypes: typeof eventTypes;
   http: typeof http;
+  "internal/bookings": typeof internal_bookings;
+  "lib/apiKeys": typeof lib_apiKeys;
+  "lib/rateLimit": typeof lib_rateLimit;
   "lib/slotEngine": typeof lib_slotEngine;
+  organizations: typeof organizations;
   reminders: typeof reminders;
   seed: typeof seed;
   slots: typeof slots;
   users: typeof users;
+  webhooks: typeof webhooks;
 }>;
 
 /**
@@ -70,4 +80,6 @@ export declare const internal: FilterApi<
   FunctionReference<any, "internal">
 >;
 
-export declare const components: {};
+export declare const components: {
+  rateLimiter: import("@convex-dev/rate-limiter/_generated/component.js").ComponentApi<"rateLimiter">;
+};

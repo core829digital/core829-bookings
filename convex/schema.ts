@@ -2,10 +2,8 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 import { authTables } from "@convex-dev/auth/server";
 
-// Phase 1 schema: single-host booking mechanic, no API-key/organizations/webhook
-// layer yet (that's Phase 3/4 — see project plan). Tables below are added
-// incrementally as phases land; do not add organizations/apiKeys/webhookEndpoints
-// until the core booking flow works end-to-end.
+// Phase 1 (booking mechanic) + Phase 3/4 (external API-key platform +
+// outgoing webhooks) — see project plan for the full phase breakdown.
 export default defineSchema({
   ...authTables,
 
@@ -25,6 +23,7 @@ export default defineSchema({
   }).index("by_email", ["email"]),
 
   eventTypes: defineTable({
+    organizationId: v.optional(v.id("organizations")), // undefined = internal CORE829 event type
     ownerUserId: v.id("users"),
     name: v.string(),
     slug: v.string(),
@@ -64,6 +63,7 @@ export default defineSchema({
   bookings: defineTable({
     eventTypeId: v.id("eventTypes"),
     hostUserId: v.id("users"),
+    organizationId: v.optional(v.id("organizations")), // which external site this came through (Phase 3)
     startTime: v.number(), // UTC epoch ms — always store UTC
     endTime: v.number(),
     inviteeName: v.string(),
@@ -82,7 +82,73 @@ export default defineSchema({
   })
     .index("by_host_and_time", ["hostUserId", "startTime"])
     .index("by_cancelToken", ["cancelToken"])
+    .index("by_organization", ["organizationId"])
     .index("by_eventType_and_time", ["eventTypeId", "startTime"])
     // Backs the reminder cron's scan across all hosts (convex/reminders.ts).
     .index("by_status_and_startTime", ["status", "startTime"]),
+
+  // ---- Phase 3: external API-key platform -------------------------------
+  // External "customer sites" that hold API keys and receive webhooks.
+  organizations: defineTable({
+    name: v.string(),
+    slug: v.string(),
+    ownerUserId: v.id("users"),
+    plan: v.union(v.literal("internal"), v.literal("free"), v.literal("paid")),
+    createdAt: v.number(),
+  })
+    .index("by_slug", ["slug"])
+    .index("by_owner", ["ownerUserId"]),
+
+  apiKeys: defineTable({
+    organizationId: v.id("organizations"),
+    name: v.string(),
+    prefix: v.string(), // plaintext, indexed lookup key
+    hashedSecret: v.string(), // sha256(secret + pepper)
+    scopes: v.array(v.string()),
+    environment: v.union(v.literal("live"), v.literal("test")),
+    status: v.union(v.literal("active"), v.literal("revoked")),
+    createdAt: v.number(),
+    lastUsedAt: v.optional(v.number()),
+    revokedAt: v.optional(v.number()),
+  })
+    .index("by_prefix", ["prefix"])
+    .index("by_organization", ["organizationId"]),
+
+  apiKeyUsageLogs: defineTable({
+    apiKeyId: v.id("apiKeys"),
+    route: v.string(),
+    statusCode: v.number(),
+    ip: v.optional(v.string()),
+    timestamp: v.number(),
+  })
+    .index("by_apiKey_and_time", ["apiKeyId", "timestamp"])
+    .index("by_time", ["timestamp"]),
+
+  // ---- Phase 4: outgoing webhooks --------------------------------------
+  webhookEndpoints: defineTable({
+    organizationId: v.id("organizations"),
+    url: v.string(),
+    secret: v.string(), // HMAC signing secret, shown once at creation
+    events: v.array(v.string()), // ["booking.created","booking.rescheduled","booking.cancelled"]
+    status: v.union(v.literal("active"), v.literal("disabled")),
+    createdAt: v.number(),
+  }).index("by_organization", ["organizationId"]),
+
+  webhookDeliveries: defineTable({
+    endpointId: v.id("webhookEndpoints"),
+    event: v.string(),
+    payload: v.string(), // canonical JSON string — exact bytes that were signed
+    status: v.union(
+      v.literal("pending"),
+      v.literal("success"),
+      v.literal("failed"),
+      v.literal("exhausted")
+    ),
+    attempts: v.number(),
+    nextAttemptAt: v.optional(v.number()),
+    lastError: v.optional(v.string()),
+    createdAt: v.number(),
+  })
+    .index("by_status_and_nextAttempt", ["status", "nextAttemptAt"])
+    .index("by_endpoint", ["endpointId"]),
 });

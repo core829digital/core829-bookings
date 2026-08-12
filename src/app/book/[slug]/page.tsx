@@ -81,6 +81,12 @@ export default function BookEventTypePage({
     list.push(slot);
     slotsByDay.set(day, list);
   }
+  // Show every day in the window, even ones with zero slots — a day that's
+  // closed (no availability rule, e.g. weekends) and a day that's fully
+  // booked both used to just vanish from the grid, which read as a bug.
+  const daysInWindow = Array.from({ length: WINDOW_DAYS }, (_, i) =>
+    DateTime.fromISO(dateFrom).plus({ days: i }).toISODate()!
+  );
 
   return (
     <main className="mx-auto w-full max-w-container flex-1 px-6 py-16">
@@ -121,30 +127,35 @@ export default function BookEventTypePage({
 
           {slots === undefined ? (
             <p className="text-foreground-muted">Caricamento slot…</p>
-          ) : slotsByDay.size === 0 ? (
-            <p className="text-foreground-muted">Nessuno slot disponibile in questo periodo.</p>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {[...slotsByDay.entries()].map(([day, daySlots]) => (
-                <div key={day} className="border border-border bg-surface p-4">
-                  <p className="tech-label mb-3">
-                    {DateTime.fromISO(day).toFormat("cccc d MMMM")}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {daySlots.map((slot) => (
-                      <button
-                        key={slot.startTime}
-                        className="border border-border px-3 py-1.5 text-sm text-foreground hover:border-accent hover:text-accent"
-                        onClick={() => setSelectedSlot(slot)}
-                      >
-                        {DateTime.fromMillis(slot.startTime, { zone: bookerTimezone }).toFormat(
-                          "HH:mm"
-                        )}
-                      </button>
-                    ))}
+              {daysInWindow.map((day) => {
+                const daySlots = slotsByDay.get(day) ?? [];
+                return (
+                  <div key={day} className="border border-border bg-surface p-4">
+                    <p className="tech-label mb-3">
+                      {DateTime.fromISO(day).toFormat("cccc d MMMM")}
+                    </p>
+                    {daySlots.length === 0 ? (
+                      <p className="text-sm text-foreground-muted">Nessuno slot disponibile</p>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {daySlots.map((slot) => (
+                          <button
+                            key={slot.startTime}
+                            className="border border-border px-3 py-1.5 text-sm text-foreground hover:border-accent hover:text-accent"
+                            onClick={() => setSelectedSlot(slot)}
+                          >
+                            {DateTime.fromMillis(slot.startTime, {
+                              zone: bookerTimezone,
+                            }).toFormat("HH:mm")}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

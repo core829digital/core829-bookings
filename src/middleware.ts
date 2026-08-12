@@ -10,6 +10,7 @@ const isTeamRoute = createRouteMatcher([
   "/event-types",
   "/event-types/(.*)",
   "/availability",
+  "/organizations",
   "/team",
 ]);
 const isSignInPage = createRouteMatcher(["/signin"]);

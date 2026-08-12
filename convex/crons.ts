@@ -9,4 +9,10 @@ crons.interval(
   internal.reminders.sendDueReminders
 );
 
+crons.interval(
+  "retry failed webhook deliveries",
+  { minutes: 1 },
+  internal.webhooks.retryDueDeliveries
+);
+
 export default crons;
