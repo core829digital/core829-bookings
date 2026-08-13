@@ -93,6 +93,7 @@ export const create = mutation({
     const bookingId = await ctx.db.insert("bookings", {
       eventTypeId: eventType._id,
       hostUserId: eventType.ownerUserId,
+      organizationId: eventType.organizationId,
       startTime: args.startTime,
       endTime,
       inviteeName: args.inviteeName,
@@ -123,6 +124,14 @@ export const create = mutation({
       endTime,
       cancelToken,
     });
+    // No-ops for internal CORE829 event types (eventType.organizationId is
+    // undefined) — scheduleForBooking checks that itself. Bookings made on
+    // a client's own hosted page (/o/[slug]) go through this same public
+    // mutation, so they need this too, not just the API-key flow.
+    await ctx.scheduler.runAfter(0, internal.webhooks.scheduleForBooking, {
+      bookingId,
+      event: "booking.created",
+    });
 
     return { bookingId, cancelToken };
   },
@@ -151,6 +160,10 @@ export const cancel = mutation({
     if (booking === null) throw new Error("Booking not found");
     if (booking.status !== "confirmed") throw new Error("Booking already cancelled");
     await ctx.db.patch(booking._id, { status: "cancelled" });
+    await ctx.scheduler.runAfter(0, internal.webhooks.scheduleForBooking, {
+      bookingId: booking._id,
+      event: "booking.cancelled",
+    });
   },
 });
 
@@ -187,6 +200,7 @@ export const reschedule = mutation({
     const bookingId = await ctx.db.insert("bookings", {
       eventTypeId: oldBooking.eventTypeId,
       hostUserId: oldBooking.hostUserId,
+      organizationId: oldBooking.organizationId,
       startTime: newStartTime,
       endTime: newEndTime,
       inviteeName: oldBooking.inviteeName,
@@ -208,6 +222,10 @@ export const reschedule = mutation({
       startTime: newStartTime,
       endTime: newEndTime,
       cancelToken: newCancelToken,
+    });
+    await ctx.scheduler.runAfter(0, internal.webhooks.scheduleForBooking, {
+      bookingId,
+      event: "booking.rescheduled",
     });
 
     return { bookingId, cancelToken: newCancelToken };
