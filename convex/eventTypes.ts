@@ -123,14 +123,33 @@ export const update = mutation({
     minNoticeMinutes: v.optional(v.number()),
     maxAdvanceDays: v.optional(v.number()),
     active: v.optional(v.boolean()),
+    // Re-assign to a different org (or back to internal via null) after
+    // creation — same owner/admin restriction as setting it on create.
+    organizationId: v.optional(v.union(v.id("organizations"), v.null())),
   },
-  handler: async (ctx, { eventTypeId, ...patch }) => {
+  handler: async (ctx, { eventTypeId, organizationId, ...patch }) => {
     const user = await requireTeamUser(ctx);
     const eventType = await ctx.db.get(eventTypeId);
     if (eventType === null || eventType.ownerUserId !== user._id) {
       throw new Error("Event type not found");
     }
-    await ctx.db.patch(eventTypeId, patch);
+
+    if (organizationId !== undefined) {
+      if (user.role !== "owner" && user.role !== "admin") {
+        throw new Error("Only an owner/admin can assign an event type to an organization");
+      }
+      if (organizationId !== null) {
+        const org = await ctx.db.get(organizationId);
+        if (org === null) throw new Error("Organization not found");
+      }
+    }
+
+    await ctx.db.patch(eventTypeId, {
+      ...patch,
+      ...(organizationId !== undefined
+        ? { organizationId: organizationId ?? undefined }
+        : {}),
+    });
   },
 });
 

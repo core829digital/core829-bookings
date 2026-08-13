@@ -114,6 +114,7 @@ function OrgDetail({
   organizationId: Id<"organizations">;
   canManage: boolean;
 }) {
+  const bookings = useQuery(api.bookings.listForOrganization, { organizationId });
   const keys = useQuery(api.organizations.listKeysForOrg, { organizationId });
   const issueKey = useMutation(api.organizations.issueKey);
   const revokeKey = useMutation(api.organizations.revokeKey);
@@ -133,6 +134,38 @@ function OrgDetail({
 
   return (
     <div className="space-y-10">
+      <section>
+        <h2 className="text-lg font-semibold text-foreground">Prenotazioni</h2>
+        <p className="mt-1 text-sm text-foreground-muted">
+          Prenotazioni fatte tramite un tipo di appuntamento assegnato a
+          questa organizzazione (widget incorporato, pagina ospitata, o API).
+        </p>
+        <div className="mt-4 space-y-2">
+          {bookings === undefined ? (
+            <p className="text-foreground-muted">Caricamento…</p>
+          ) : bookings.length === 0 ? (
+            <p className="text-foreground-muted">
+              Nessuna prenotazione ancora. Assegna un tipo di appuntamento a
+              questa organizzazione in /event-types.
+            </p>
+          ) : (
+            bookings.map((b) => (
+              <div key={b._id} className="border border-border p-3">
+                <p className="text-foreground">
+                  {DateTime.fromMillis(b.startTime, { zone: b.inviteeTimezone }).toFormat(
+                    "d MMM yyyy, HH:mm"
+                  )}{" "}
+                  <span className="tech-label ml-2">{b.status}</span>
+                </p>
+                <p className="text-sm text-foreground-muted">
+                  {b.inviteeName} · {b.inviteeEmail}
+                </p>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+
       <section>
         <h2 className="text-lg font-semibold text-foreground">Chiavi API</h2>
 

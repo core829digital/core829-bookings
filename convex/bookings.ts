@@ -233,6 +233,19 @@ export const reschedule = mutation({
 });
 
 // Team-only from here down.
+export const listForOrganization = query({
+  args: { organizationId: v.id("organizations") },
+  handler: async (ctx, { organizationId }) => {
+    await requireTeamUser(ctx);
+    const bookings = await ctx.db
+      .query("bookings")
+      .withIndex("by_organization", (q) => q.eq("organizationId", organizationId))
+      .order("desc")
+      .take(50);
+    return bookings;
+  },
+});
+
 export const listMineForRange = query({
   args: { fromTime: v.number(), toTime: v.number() },
   handler: async (ctx, { fromTime, toTime }) => {

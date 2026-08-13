@@ -14,13 +14,14 @@ const LOCATIONS = [
 ] as const;
 
 export default function EventTypesPage() {
+  const currentUser = useQuery(api.users.current);
   const eventTypes = useQuery(api.eventTypes.listMine);
   const organizations = useQuery(api.organizations.list);
   const update = useMutation(api.eventTypes.update);
   const remove = useMutation(api.eventTypes.remove);
   const [showForm, setShowForm] = useState(false);
 
-  const orgNameById = new Map((organizations ?? []).map((o) => [o.org._id, o.org.name]));
+  const canAssignOrg = currentUser?.role === "owner" || currentUser?.role === "admin";
   const orgSlugById = new Map((organizations ?? []).map((o) => [o.org._id, o.org.slug]));
 
   return (
@@ -62,11 +63,29 @@ export default function EventTypesPage() {
                   {et.organizationId && (
                     <>
                       {" · "}
-                      {orgNameById.get(et.organizationId) ?? "organizzazione"} (/o/
-                      {orgSlugById.get(et.organizationId) ?? "…"})
+                      /o/{orgSlugById.get(et.organizationId) ?? "…"}
                     </>
                   )}
                 </p>
+                {canAssignOrg && (
+                  <select
+                    className="input-core829 mt-2 w-auto text-xs"
+                    value={et.organizationId ?? ""}
+                    onChange={(e) =>
+                      update({
+                        eventTypeId: et._id as Id<"eventTypes">,
+                        organizationId: (e.target.value || null) as Id<"organizations"> | null,
+                      })
+                    }
+                  >
+                    <option value="">CORE829 (interno)</option>
+                    {(organizations ?? []).map(({ org }) => (
+                      <option key={org._id} value={org._id}>
+                        {org.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
               <div className="flex gap-2">
                 <EmbedButton slug={et.slug} />
