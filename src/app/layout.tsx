@@ -9,10 +9,27 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
+const title = "CORE829 Bookings — Prenota un appuntamento online";
+const description =
+  "Il sistema di prenotazione di CORE829: calendario in tempo reale, promemoria automatici e API per integrare il booking in qualsiasi sito.";
+
 export const metadata: Metadata = {
-  title: "CORE829 Bookings — Prenota un appuntamento online",
-  description:
-    "Il sistema di prenotazione di CORE829: calendario in tempo reale, promemoria automatici e API per integrare il booking in qualsiasi sito.",
+  metadataBase: new URL("https://bookings.core829.net"),
+  title: { default: title, template: "%s | CORE829 Bookings" },
+  description,
+  openGraph: {
+    title,
+    description,
+    url: "https://bookings.core829.net",
+    siteName: "CORE829 Bookings",
+    locale: "it_IT",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
