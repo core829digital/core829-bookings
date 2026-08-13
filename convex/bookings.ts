@@ -114,6 +114,15 @@ export const create = mutation({
       endTime,
       cancelToken,
     });
+    await ctx.scheduler.runAfter(0, internal.emails.sendBookingNotificationToOffice, {
+      inviteeName: args.inviteeName,
+      inviteeEmail: args.inviteeEmail,
+      inviteeTimezone: args.inviteeTimezone,
+      eventTypeName: eventType.name,
+      startTime: args.startTime,
+      endTime,
+      cancelToken,
+    });
 
     return { bookingId, cancelToken };
   },

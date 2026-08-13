@@ -121,6 +121,15 @@ export const createForOrganization = internalMutation({
       endTime,
       cancelToken,
     });
+    await ctx.scheduler.runAfter(0, internal.emails.sendBookingNotificationToOffice, {
+      inviteeName: args.inviteeName,
+      inviteeEmail: args.inviteeEmail,
+      inviteeTimezone: args.inviteeTimezone,
+      eventTypeName: eventType.name,
+      startTime: args.startTime,
+      endTime,
+      cancelToken,
+    });
     await ctx.scheduler.runAfter(0, internal.webhooks.scheduleForBooking, {
       bookingId,
       event: "booking.created",
