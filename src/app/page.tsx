@@ -5,7 +5,9 @@ import Script from "next/script";
 import { useQuery, useConvexAuth } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Button } from "@/components/ui/Button";
-import Badge from "@/components/ui/Badge";
+import { PublicHeader } from "@/components/PublicHeader";
+import { PublicFooter } from "@/components/PublicFooter";
+import { BookingWidget } from "@/components/BookingWidget";
 
 const VALUE_PROPS = [
   {
@@ -21,8 +23,8 @@ const VALUE_PROPS = [
     body: "Conferma via email immediata dopo ogni prenotazione, promemoria automatici a 24 ore e a 1 ora dall'appuntamento, link diretto per cancellare o riprogrammare senza bisogno di un account.",
   },
   {
-    title: "API per il tuo sito",
-    body: "Ogni sito costruito da CORE829 può collegarsi a questo stesso sistema tramite chiave API, ricevendo notifiche webhook quando un visitatore prenota, cancella o riprogramma un appuntamento.",
+    title: "Widget per il tuo sito",
+    body: "Lo stesso calendario che vedi qui sotto si integra in qualsiasi sito con una riga di codice, oppure via API con notifiche webhook quando un visitatore prenota, cancella o riprogramma.",
   },
 ];
 
@@ -33,8 +35,9 @@ export default function Home() {
 
   return (
     <>
+      <PublicHeader />
       <main className="flex flex-1 flex-col">
-        <section className="relative flex min-h-[36rem] flex-col overflow-hidden">
+        <section className="relative flex min-h-[32rem] flex-col overflow-hidden">
           <Image
             src="/core829branding/core829-banner.webp"
             alt=""
@@ -42,7 +45,7 @@ export default function Home() {
             priority
             className="object-cover"
           />
-          <div className="relative z-10 flex flex-1 flex-col justify-center px-6 py-24 sm:px-12 lg:px-20">
+          <div className="relative z-10 flex flex-1 flex-col justify-center px-6 py-20 sm:px-12 lg:px-20">
             <p className="text-xs uppercase tracking-[0.25em] text-white/70">
               CORE829 · Agenzia Digitale
             </p>
@@ -51,12 +54,12 @@ export default function Home() {
             </h1>
             <p className="mt-4 max-w-md text-white/80">
               Il sistema di prenotazione costruito da CORE829: calendario in
-              tempo reale, promemoria automatici e un&apos;API pronta per
-              essere integrata in qualsiasi sito.
+              tempo reale, promemoria automatici e un widget pronto per
+              essere integrato in qualsiasi sito.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-4">
               {primaryEventType && (
-                <a href={`/book/${primaryEventType.slug}`} className="inline-block w-fit">
+                <a href="#prenota" className="inline-block w-fit">
                   <Button
                     variant="secondary"
                     className="border-white bg-white text-foreground hover:bg-transparent hover:text-white"
@@ -79,18 +82,36 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="mx-auto w-full max-w-container px-6 py-20 sm:px-12 lg:px-20">
-          <p className="kicker">Perché usarlo</p>
-          <h2 className="mt-2 max-w-xl text-2xl font-semibold text-foreground sm:text-3xl">
-            Costruito per non far perdere né tempo né clienti
-          </h2>
-          <div className="mt-10 grid gap-8 sm:grid-cols-2">
-            {VALUE_PROPS.map((item) => (
-              <div key={item.title} className="border-l-2 border-accent pl-5">
-                <h3 className="text-lg font-medium text-foreground">{item.title}</h3>
-                <p className="mt-2 text-sm text-foreground-muted">{item.body}</p>
-              </div>
-            ))}
+        {primaryEventType && (
+          <section id="prenota" className="mx-auto w-full max-w-container px-6 py-20 sm:px-12 lg:px-20">
+            <p className="kicker">Provalo subito</p>
+            <h2 className="mt-2 max-w-xl text-2xl font-semibold text-foreground sm:text-3xl">
+              Questo è il calendario vero, in tempo reale
+            </h2>
+            <p className="mt-3 max-w-2xl text-foreground-muted">
+              Nessuna demo finta: scegli un orario qui sotto ed è la stessa
+              identica esperienza che avrebbe un cliente sul tuo sito.
+            </p>
+            <div className="mt-8 border border-border bg-surface p-4 sm:p-8">
+              <BookingWidget slug={primaryEventType.slug} compact />
+            </div>
+          </section>
+        )}
+
+        <section className="border-t border-border px-6 py-20 sm:px-12 lg:px-20">
+          <div className="mx-auto w-full max-w-container">
+            <p className="kicker">Perché usarlo</p>
+            <h2 className="mt-2 max-w-xl text-2xl font-semibold text-foreground sm:text-3xl">
+              Costruito per non far perdere né tempo né clienti
+            </h2>
+            <div className="mt-10 grid gap-8 sm:grid-cols-2">
+              {VALUE_PROPS.map((item) => (
+                <div key={item.title} className="border-l-2 border-accent pl-5">
+                  <h3 className="text-lg font-medium text-foreground">{item.title}</h3>
+                  <p className="mt-2 text-sm text-foreground-muted">{item.body}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -106,8 +127,8 @@ export default function Home() {
               appuntamenti interni di CORE829, ma è pensata per diventare il
               motore di prenotazione anche dei siti che costruiamo per i
               nostri clienti: ogni azienda può avere la propria pagina di
-              prenotazione, ospitata qui, oppure integrare direttamente il
-              booking nel proprio sito tramite API key e webhook — con
+              prenotazione ospitata qui, integrare il widget nel proprio sito
+              con una riga di codice, oppure collegarsi via API — con
               un&apos;offerta ad abbonamento mensile dedicata.
             </p>
             <a href="mailto:hello@core829.net" className="mt-8 inline-block w-fit">
@@ -143,49 +164,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="border-t border-border bg-background">
-        <div className="mx-auto w-full max-w-container px-6 py-12 sm:px-12 lg:px-20">
-          <div className="flex flex-col gap-8 sm:flex-row sm:justify-between">
-            <div>
-              <Badge tone="outline">CORE829 SRL</Badge>
-              <p className="mt-3 text-sm text-foreground-muted">
-                Agenzia Digitale
-                <br />
-                Str. Mihai Eminescu, 10, Roman, Romania
-                <br />
-                Reg. com.: J2026029428009
-                <br />
-                CUI / CIF: 54616345
-              </p>
-            </div>
-            <div className="text-sm text-foreground-muted">
-              <p>
-                <a href="tel:+40766668482" className="link-ghost">
-                  +40 766 668 482
-                </a>
-              </p>
-              <p className="mt-2">
-                <a href="mailto:hello@core829.net" className="link-ghost">
-                  hello@core829.net
-                </a>
-              </p>
-              <p className="mt-2">
-                <a
-                  href="https://www.trustpilot.com/review/core829.net"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="link-ghost"
-                >
-                  Recensioni Trustpilot
-                </a>
-              </p>
-            </div>
-          </div>
-          <p className="mt-10 text-xs text-foreground-muted">
-            © {new Date().getFullYear()} CORE829 SRL. Tutti i diritti riservati.
-          </p>
-        </div>
-      </footer>
+      <PublicFooter />
 
       <Script
         src="//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js"

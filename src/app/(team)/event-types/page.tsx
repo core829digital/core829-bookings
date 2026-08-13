@@ -69,6 +69,7 @@ export default function EventTypesPage() {
                 </p>
               </div>
               <div className="flex gap-2">
+                <EmbedButton slug={et.slug} />
                 <Button
                   variant="secondary"
                   onClick={() =>
@@ -89,6 +90,26 @@ export default function EventTypesPage() {
         )}
       </div>
     </div>
+  );
+}
+
+function EmbedButton({ slug }: { slug: string }) {
+  const [copied, setCopied] = useState(false);
+
+  return (
+    <Button
+      variant="secondary"
+      onClick={() => {
+        const src = `${window.location.origin}/embed/${slug}`;
+        const snippet = `<iframe src="${src}" width="100%" height="700" frameborder="0" style="border:0"></iframe>`;
+        navigator.clipboard.writeText(snippet).then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        });
+      }}
+    >
+      {copied ? "Copiato!" : "Copia widget"}
+    </Button>
   );
 }
 

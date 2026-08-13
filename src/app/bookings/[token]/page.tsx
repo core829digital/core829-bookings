@@ -1,3 +1,4 @@
+
 "use client";
 
 import { use, useState } from "react";
@@ -5,6 +6,8 @@ import { useMutation, useQuery } from "convex/react";
 import { DateTime } from "luxon";
 import { api } from "../../../../convex/_generated/api";
 import { Button } from "@/components/ui/Button";
+import { PublicHeader } from "@/components/PublicHeader";
+import { PublicFooter } from "@/components/PublicFooter";
 
 export default function ManageBookingPage({
   params,
@@ -18,13 +21,23 @@ export default function ManageBookingPage({
   const [error, setError] = useState<string | null>(null);
 
   if (data === undefined) {
-    return <main className="flex flex-1 items-center justify-center">Caricamento…</main>;
+    return (
+      <>
+        <PublicHeader />
+        <main className="flex flex-1 items-center justify-center">Caricamento…</main>
+        <PublicFooter />
+      </>
+    );
   }
   if (data === null || data.eventType === null) {
     return (
-      <main className="flex flex-1 items-center justify-center text-foreground-muted">
-        Prenotazione non trovata.
-      </main>
+      <>
+        <PublicHeader />
+        <main className="flex flex-1 items-center justify-center text-foreground-muted">
+          Prenotazione non trovata.
+        </main>
+        <PublicFooter />
+      </>
     );
   }
 
@@ -32,46 +45,50 @@ export default function ManageBookingPage({
   const bookerTz = booking.inviteeTimezone;
 
   return (
-    <main className="mx-auto w-full max-w-md flex-1 px-6 py-24">
-      <p className="kicker mb-2">{eventType!.name}</p>
-      <h1 className="text-2xl font-semibold text-foreground">
-        {DateTime.fromMillis(booking.startTime, { zone: bookerTz }).toFormat(
-          "cccc d MMMM yyyy, HH:mm"
-        )}
-      </h1>
-      <p className="mt-2 text-foreground-muted">
-        {booking.inviteeName} · {booking.inviteeEmail}
-      </p>
-
-      {booking.status === "cancelled" && (
-        <p className="mt-6 text-accent">Questa prenotazione è stata cancellata.</p>
-      )}
-      {booking.status === "rescheduled" && (
-        <p className="mt-6 text-foreground-muted">
-          Questa prenotazione è stata riprogrammata.
+    <>
+      <PublicHeader />
+      <main className="mx-auto w-full max-w-md flex-1 px-6 py-24">
+        <p className="kicker mb-2">{eventType!.name}</p>
+        <h1 className="text-2xl font-semibold text-foreground">
+          {DateTime.fromMillis(booking.startTime, { zone: bookerTz }).toFormat(
+            "cccc d MMMM yyyy, HH:mm"
+          )}
+        </h1>
+        <p className="mt-2 text-foreground-muted">
+          {booking.inviteeName} · {booking.inviteeEmail}
         </p>
-      )}
-      {booking.status === "confirmed" && (
-        <div className="mt-6 flex gap-3">
-          <a href={`/book/${eventType!.slug}?reschedule=${token}`}>
-            <Button variant="secondary">Riprogramma</Button>
-          </a>
-          <Button
-            variant="secondary"
-            disabled={cancelling}
-            onClick={() => {
-              setError(null);
-              setCancelling(true);
-              cancelBooking({ cancelToken: token })
-                .catch(() => setError("Impossibile cancellare la prenotazione."))
-                .finally(() => setCancelling(false));
-            }}
-          >
-            Cancella
-          </Button>
-        </div>
-      )}
-      {error && <p className="mt-4 text-sm text-accent">{error}</p>}
-    </main>
+
+        {booking.status === "cancelled" && (
+          <p className="mt-6 text-accent">Questa prenotazione è stata cancellata.</p>
+        )}
+        {booking.status === "rescheduled" && (
+          <p className="mt-6 text-foreground-muted">
+            Questa prenotazione è stata riprogrammata.
+          </p>
+        )}
+        {booking.status === "confirmed" && (
+          <div className="mt-6 flex gap-3">
+            <a href={`/book/${eventType!.slug}?reschedule=${token}`}>
+              <Button variant="secondary">Riprogramma</Button>
+            </a>
+            <Button
+              variant="secondary"
+              disabled={cancelling}
+              onClick={() => {
+                setError(null);
+                setCancelling(true);
+                cancelBooking({ cancelToken: token })
+                  .catch(() => setError("Impossibile cancellare la prenotazione."))
+                  .finally(() => setCancelling(false));
+              }}
+            >
+              Cancella
+            </Button>
+          </div>
+        )}
+        {error && <p className="mt-4 text-sm text-accent">{error}</p>}
+      </main>
+      <PublicFooter />
+    </>
   );
 }
