@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { useMutation, useQuery } from "convex/react";
 import { useAuthActions } from "@convex-dev/auth/react";
+import { DateTime } from "luxon";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "@/components/ui/Button";
 
@@ -73,6 +74,7 @@ export default function TeamLayout({ children }: { children: ReactNode }) {
             ))}
           </nav>
           <div className="flex items-center gap-4">
+            <NotificationBell />
             <span className="tech-label">
               {currentUser?.name} · {currentUser?.role}
             </span>
@@ -83,6 +85,75 @@ export default function TeamLayout({ children }: { children: ReactNode }) {
         </div>
       </header>
       <main className="mx-auto w-full max-w-container flex-1 px-6 py-10">{children}</main>
+    </div>
+  );
+}
+
+const STATUS_LABEL: Record<string, string> = {
+  confirmed: "Nuova",
+  rescheduled: "Riprogrammata",
+  cancelled: "Cancellata",
+};
+
+function NotificationBell() {
+  const unseen = useQuery(api.bookings.listUnseenForMe);
+  const markSeen = useMutation(api.bookings.markSeen);
+  const markAllSeen = useMutation(api.bookings.markAllSeen);
+  const [open, setOpen] = useState(false);
+
+  const count = unseen?.length ?? 0;
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="relative text-foreground-muted hover:text-foreground"
+        aria-label="Notifiche"
+      >
+        🔔
+        {count > 0 && (
+          <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-medium text-white">
+            {count}
+          </span>
+        )}
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full z-50 mt-2 w-80 border border-border bg-background shadow-lg">
+          <div className="flex items-center justify-between border-b border-border p-3">
+            <span className="tech-label">Notifiche</span>
+            {count > 0 && (
+              <button
+                className="link-ghost text-xs"
+                onClick={() => markAllSeen({})}
+              >
+                Segna tutte come lette
+              </button>
+            )}
+          </div>
+          <div className="max-h-80 overflow-y-auto">
+            {count === 0 ? (
+              <p className="p-4 text-sm text-foreground-muted">Nessuna novità.</p>
+            ) : (
+              unseen!.map((b) => (
+                <button
+                  key={b._id}
+                  onClick={() => markSeen({ bookingId: b._id })}
+                  className="block w-full border-b border-border p-3 text-left hover:bg-surface"
+                >
+                  <p className="text-xs font-medium text-accent">{STATUS_LABEL[b.status]}</p>
+                  <p className="mt-0.5 text-sm text-foreground">{b.inviteeName}</p>
+                  <p className="text-xs text-foreground-muted">
+                    {DateTime.fromMillis(b.startTime, { zone: b.inviteeTimezone }).toFormat(
+                      "d MMM, HH:mm"
+                    )}
+                  </p>
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

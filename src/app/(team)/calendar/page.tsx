@@ -33,11 +33,17 @@ export default function CalendarPage() {
   const toTime = weekStart.plus({ weeks: 1 }).toMillis();
   const bookings = useQuery(api.bookings.listMineForRange, { fromTime, toTime });
   const cancelAsHost = useMutation(api.bookings.cancelAsHost);
+  const markSeen = useMutation(api.bookings.markSeen);
 
   const [quickCreate, setQuickCreate] = useState<DateTime | null>(null);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
-  const confirmedBookings = (bookings ?? []).filter((b) => b.status === "confirmed");
+  // Confirmed bookings always show; cancelled/rescheduled ones only show
+  // while unseen, so the calendar surfaces "something changed" without
+  // permanently cluttering past slots that are no longer live.
+  const visibleBookings = (bookings ?? []).filter(
+    (b) => b.status === "confirmed" || !b.seenByTeam
+  );
 
   return (
     <div>
@@ -59,7 +65,14 @@ export default function CalendarPage() {
         </div>
       </div>
 
-      <div className="mt-6 overflow-x-auto border border-border">
+      <div className="mt-4 flex flex-wrap items-center gap-4">
+        <Legend color="bg-emerald-500" label="Nuova" />
+        <Legend color="bg-sky-500" label="Riprogrammata" />
+        <Legend color="bg-red-500" label="Cancellata" />
+        <Legend color="bg-accent" label="Confermata" />
+      </div>
+
+      <div className="mt-4 overflow-x-auto border border-border">
         <div
           className="grid min-w-[900px]"
           style={{
@@ -120,7 +133,7 @@ export default function CalendarPage() {
           )}
 
           {/* booking blocks */}
-          {confirmedBookings.map((booking) => {
+          {visibleBookings.map((booking) => {
             const start = DateTime.fromMillis(booking.startTime, { zone: timezone });
             const end = DateTime.fromMillis(booking.endTime, { zone: timezone });
             const dayIdx = days.findIndex((d) => d.hasSame(start, "day"));
@@ -130,18 +143,26 @@ export default function CalendarPage() {
             const span = Math.max(1, (end.diff(start, "minutes").minutes) / SLOT_MINUTES);
             if (rowStart < 2 || rowStart >= ROWS + 2) return null;
 
+            const colorClass = !booking.seenByTeam
+              ? booking.status === "cancelled"
+                ? "border-red-500/50 bg-red-500/10 text-red-600"
+                : booking.status === "rescheduled"
+                  ? "border-sky-500/50 bg-sky-500/10 text-sky-600"
+                  : "border-emerald-500/50 bg-emerald-500/10 text-emerald-600"
+              : "border-accent/40 bg-accent/10 text-accent";
+
             return (
               <button
                 key={booking._id}
                 type="button"
                 onClick={() => setSelectedBooking(booking)}
-                className="z-10 m-px overflow-hidden border border-accent/40 bg-accent/10 p-1.5 text-left hover:border-accent"
+                className={`z-10 m-px overflow-hidden border p-1.5 text-left hover:opacity-80 ${colorClass}`}
                 style={{
                   gridColumn: dayIdx + 2,
                   gridRow: `${rowStart} / span ${span}`,
                 }}
               >
-                <p className="truncate text-xs font-medium text-accent">
+                <p className="truncate text-xs font-medium">
                   {start.toFormat("HH:mm")} {booking.inviteeName}
                 </p>
               </button>
@@ -158,7 +179,10 @@ export default function CalendarPage() {
         <BookingDetailModal
           booking={selectedBooking}
           timezone={timezone}
-          onClose={() => setSelectedBooking(null)}
+          onClose={() => {
+            if (!selectedBooking.seenByTeam) markSeen({ bookingId: selectedBooking._id });
+            setSelectedBooking(null);
+          }}
           onCancel={() => {
             cancelAsHost({ bookingId: selectedBooking._id });
             setSelectedBooking(null);
@@ -166,6 +190,15 @@ export default function CalendarPage() {
         />
       )}
     </div>
+  );
+}
+
+function Legend({ color, label }: { color: string; label: string }) {
+  return (
+    <span className="flex items-center gap-2 text-xs text-foreground-muted">
+      <span className={`h-2.5 w-2.5 rounded-full ${color}`} />
+      {label}
+    </span>
   );
 }
 
@@ -214,6 +247,11 @@ function BookingDetailModal({
       <p className="mt-1 text-sm text-foreground-muted">
         {booking.inviteeName} · {booking.inviteeEmail}
       </p>
+      {booking.service && (
+        <p className="mt-2 text-sm text-foreground">
+          <span className="tech-label">Servizio</span> {booking.service}
+        </p>
+      )}
       {booking.notes && <p className="mt-2 text-sm text-foreground-muted">{booking.notes}</p>}
       <Button variant="secondary" className="mt-6" onClick={onCancel}>
         Cancella prenotazione

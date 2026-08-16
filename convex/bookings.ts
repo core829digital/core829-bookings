@@ -64,6 +64,7 @@ export const create = mutation({
     inviteeEmail: v.string(),
     inviteeTimezone: v.string(),
     notes: v.optional(v.string()),
+    service: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const eventType = await ctx.db
@@ -100,10 +101,12 @@ export const create = mutation({
       inviteeEmail: args.inviteeEmail,
       inviteeTimezone: args.inviteeTimezone,
       notes: args.notes,
+      service: args.service,
       status: "confirmed",
       cancelToken,
       remindersSent: [],
       createdAt: now,
+      seenByTeam: false,
     });
 
     await ctx.scheduler.runAfter(0, internal.emails.sendBookingConfirmation, {
@@ -120,6 +123,7 @@ export const create = mutation({
       inviteeEmail: args.inviteeEmail,
       inviteeTimezone: args.inviteeTimezone,
       eventTypeName: eventType.name,
+      service: args.service,
       startTime: args.startTime,
       endTime,
       cancelToken,
@@ -159,7 +163,7 @@ export const cancel = mutation({
       .unique();
     if (booking === null) throw new Error("Booking not found");
     if (booking.status !== "confirmed") throw new Error("Booking already cancelled");
-    await ctx.db.patch(booking._id, { status: "cancelled" });
+    await ctx.db.patch(booking._id, { status: "cancelled", seenByTeam: false });
     await ctx.scheduler.runAfter(0, internal.webhooks.scheduleForBooking, {
       bookingId: booking._id,
       event: "booking.cancelled",
@@ -194,7 +198,7 @@ export const reschedule = mutation({
       oldBooking._id
     );
 
-    await ctx.db.patch(oldBooking._id, { status: "rescheduled" });
+    await ctx.db.patch(oldBooking._id, { status: "rescheduled", seenByTeam: false });
 
     const newCancelToken = generateCancelToken();
     const bookingId = await ctx.db.insert("bookings", {
@@ -207,11 +211,13 @@ export const reschedule = mutation({
       inviteeEmail: oldBooking.inviteeEmail,
       inviteeTimezone: oldBooking.inviteeTimezone,
       notes: oldBooking.notes,
+      service: oldBooking.service,
       status: "confirmed",
       cancelToken: newCancelToken,
       rescheduledFromBookingId: oldBooking._id,
       remindersSent: [],
       createdAt: now,
+      seenByTeam: false,
     });
 
     await ctx.scheduler.runAfter(0, internal.emails.sendBookingConfirmation, {
@@ -256,6 +262,46 @@ export const listMineForRange = query({
         q.eq("hostUserId", user._id).gte("startTime", fromTime).lte("startTime", toTime)
       )
       .collect();
+  },
+});
+
+// Drives the notification bell: count + list of bookings the team hasn't
+// looked at yet, regardless of date (a cancellation next month still counts).
+export const listUnseenForMe = query({
+  args: {},
+  handler: async (ctx) => {
+    const user = await requireTeamUser(ctx);
+    const mine = await ctx.db
+      .query("bookings")
+      .withIndex("by_host_and_time", (q) => q.eq("hostUserId", user._id))
+      .order("desc")
+      .take(200);
+    return mine.filter((b) => !b.seenByTeam);
+  },
+});
+
+export const markSeen = mutation({
+  args: { bookingId: v.id("bookings") },
+  handler: async (ctx, { bookingId }) => {
+    const user = await requireTeamUser(ctx);
+    const booking = await ctx.db.get(bookingId);
+    if (booking === null || booking.hostUserId !== user._id) return;
+    await ctx.db.patch(bookingId, { seenByTeam: true });
+  },
+});
+
+export const markAllSeen = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const user = await requireTeamUser(ctx);
+    const mine = await ctx.db
+      .query("bookings")
+      .withIndex("by_host_and_time", (q) => q.eq("hostUserId", user._id))
+      .order("desc")
+      .take(200);
+    for (const b of mine) {
+      if (!b.seenByTeam) await ctx.db.patch(b._id, { seenByTeam: true });
+    }
   },
 });
 

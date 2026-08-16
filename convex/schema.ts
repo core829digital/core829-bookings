@@ -79,6 +79,13 @@ export default defineSchema({
     rescheduledFromBookingId: v.optional(v.id("bookings")),
     remindersSent: v.array(v.string()), // e.g. ["24h","1h"]
     createdAt: v.number(),
+    // Which CORE829 service the invitee wants to discuss — lets the team
+    // prep for the call. Undefined for legacy bookings made before this
+    // field existed.
+    service: v.optional(v.string()),
+    // In-app notification tracking: undefined/false = shows as "new" on the
+    // team calendar until a team member opens it.
+    seenByTeam: v.optional(v.boolean()),
   })
     .index("by_host_and_time", ["hostUserId", "startTime"])
     .index("by_cancelToken", ["cancelToken"])
@@ -86,6 +93,23 @@ export default defineSchema({
     .index("by_eventType_and_time", ["eventTypeId", "startTime"])
     // Backs the reminder cron's scan across all hosts (convex/reminders.ts).
     .index("by_status_and_startTime", ["status", "startTime"]),
+
+  // Delivery log for every transactional email attempt — makes silent
+  // failures (e.g. a suppressed recipient address) visible in the
+  // dashboard instead of only in Convex function logs.
+  emailLogs: defineTable({
+    bookingCancelToken: v.optional(v.string()),
+    type: v.union(
+      v.literal("confirmation"),
+      v.literal("reminder"),
+      v.literal("office_notification")
+    ),
+    recipient: v.string(),
+    status: v.union(v.literal("sent"), v.literal("failed")),
+    error: v.optional(v.string()),
+    attempt: v.number(),
+    createdAt: v.number(),
+  }).index("by_time", ["createdAt"]),
 
   // ---- Phase 3: external API-key platform -------------------------------
   // External "customer sites" that hold API keys and receive webhooks.

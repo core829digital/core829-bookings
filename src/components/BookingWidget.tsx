@@ -1,10 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { useMutation, useQuery } from "convex/react";
 import { DateTime } from "luxon";
 import { api } from "../../convex/_generated/api";
 import { Button } from "@/components/ui/Button";
+import { CORE829_SERVICES } from "@/lib/services";
 
 const WINDOW_DAYS = 7;
 
@@ -13,21 +15,46 @@ interface Slot {
   endTime: number;
 }
 
+export interface WidgetTheme {
+  accent?: string; // any valid CSS color, e.g. "#e11d2e" — defaults to CORE829 red
+  font?: string; // Google Fonts family name, e.g. "Inter" — loaded on demand
+  showLogo?: boolean; // "Powered by CORE829" footer badge — default true
+}
+
+function useGoogleFont(font?: string) {
+  useEffect(() => {
+    if (!font) return;
+    const id = `widget-font-${font.replace(/\s+/g, "-")}`;
+    if (document.getElementById(id)) return;
+    const link = document.createElement("link");
+    link.id = id;
+    link.rel = "stylesheet";
+    link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@400;500;600&display=swap`;
+    document.head.appendChild(link);
+  }, [font]);
+}
+
 // The whole public booking flow (event type header, week-by-week slot
 // picker, invitee form, confirmation) as one reusable widget — used by the
 // full-page /book/[slug] route, the chrome-free /embed/[slug] route (for
 // iframing into other sites, including core829.net), and the live preview
 // on the CORE829 homepage. `compact` drops the outer page padding/max-width
-// so it fits inside a card or an iframe instead of a full page.
+// so it fits inside a card or an iframe instead of a full page. `theme`
+// lets an embedder match its own brand (accent color, font) without any
+// code beyond the iframe's query string — see /embed/[slug]/page.tsx.
 export function BookingWidget({
   slug,
   rescheduleToken = null,
   compact = false,
+  theme,
 }: {
   slug: string;
   rescheduleToken?: string | null;
   compact?: boolean;
+  theme?: WidgetTheme;
 }) {
+  useGoogleFont(theme?.font);
+
   const eventType = useQuery(api.eventTypes.getBySlug, { slug });
   const bookerTimezone = useMemo(
     () => Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -52,13 +79,22 @@ export function BookingWidget({
   );
 
   const wrapperClass = compact ? "" : "mx-auto w-full max-w-container flex-1 px-6 py-16";
+  const themeStyle = {
+    ...(theme?.accent ? { "--color-accent": theme.accent } : {}),
+    ...(theme?.font ? { fontFamily: `"${theme.font}", var(--font-sans)` } : {}),
+  } as React.CSSProperties;
+  const showLogo = theme?.showLogo ?? true;
 
   if (eventType === undefined) {
-    return <div className={wrapperClass}>Caricamento…</div>;
+    return (
+      <div className={wrapperClass} style={themeStyle}>
+        Caricamento…
+      </div>
+    );
   }
   if (eventType === null) {
     return (
-      <div className={`${wrapperClass} text-foreground-muted`}>
+      <div className={`${wrapperClass} text-foreground-muted`} style={themeStyle}>
         Questo tipo di appuntamento non esiste o non è più disponibile.
       </div>
     );
@@ -66,7 +102,7 @@ export function BookingWidget({
 
   if (confirmation) {
     return (
-      <div className={`${wrapperClass} text-center`}>
+      <div className={`${wrapperClass} text-center`} style={themeStyle}>
         <h2 className="text-2xl font-semibold text-foreground">Prenotazione confermata</h2>
         <p className="mt-2 text-foreground-muted">
           Riceverai un&apos;email di conferma a breve.
@@ -79,6 +115,7 @@ export function BookingWidget({
         >
           Gestisci la prenotazione
         </a>
+        {showLogo && <WidgetBrandBadge />}
       </div>
     );
   }
@@ -95,7 +132,7 @@ export function BookingWidget({
   );
 
   return (
-    <div className={wrapperClass}>
+    <div className={wrapperClass} style={themeStyle}>
       <p className="kicker mb-2">{eventType.durationMinutes} min</p>
       <h2 className={compact ? "text-xl font-semibold text-foreground" : "text-3xl font-semibold text-foreground"}>
         {eventType.name}
@@ -166,9 +203,24 @@ export function BookingWidget({
               })}
             </div>
           )}
+          {showLogo && <WidgetBrandBadge />}
         </div>
       )}
     </div>
+  );
+}
+
+function WidgetBrandBadge() {
+  return (
+    <a
+      href="https://bookings.core829.net"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mt-8 inline-flex items-center gap-2 text-xs text-foreground-muted hover:text-foreground"
+    >
+      <Image src="/core829branding/core829-logo.webp" alt="" width={16} height={16} />
+      Prenotazioni gestite da CORE829
+    </a>
   );
 }
 
@@ -193,6 +245,7 @@ function BookingForm({
   const rescheduleBooking = useMutation(api.bookings.reschedule);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [service, setService] = useState("");
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -226,6 +279,7 @@ function BookingForm({
                 inviteeEmail: email,
                 inviteeTimezone: bookerTimezone,
                 notes: notes || undefined,
+                service: service || undefined,
               });
           submission
             .then((result) => onBooked(result.cancelToken))
@@ -250,6 +304,18 @@ function BookingForm({
               onChange={(e) => setEmail(e.target.value)}
               required
             />
+            <select
+              className="input-core829"
+              value={service}
+              onChange={(e) => setService(e.target.value)}
+            >
+              <option value="">Di cosa vuoi parlare? (opzionale)</option>
+              {CORE829_SERVICES.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
             <textarea
               className="input-core829"
               placeholder="Note (opzionale)"

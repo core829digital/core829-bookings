@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQuery } from "convex/react";
+import { DateTime } from "luxon";
 import { api } from "../../../../convex/_generated/api";
 import type { Id } from "../../../../convex/_generated/dataModel";
 import { Button } from "@/components/ui/Button";
@@ -85,6 +86,58 @@ export default function TeamPage() {
                   </Badge>
                 )}
               </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {canManage && <EmailAuditLog />}
+    </div>
+  );
+}
+
+const EMAIL_TYPE_LABEL: Record<string, string> = {
+  confirmation: "Conferma cliente",
+  reminder: "Promemoria",
+  office_notification: "Notifica ufficio",
+};
+
+function EmailAuditLog() {
+  const logs = useQuery(api.emails.listRecentLogs);
+  const failed = (logs ?? []).filter((l) => l.status === "failed");
+
+  return (
+    <div className="mt-12">
+      <h2 className="text-lg font-semibold text-foreground">Registro email</h2>
+      <p className="mt-1 text-sm text-foreground-muted">
+        Ultimi 100 tentativi di invio (conferme, promemoria, notifiche
+        ufficio). {failed.length > 0 && (
+          <span className="text-accent">{failed.length} falliti.</span>
+        )}
+      </p>
+      <div className="mt-4 max-h-96 space-y-1.5 overflow-y-auto">
+        {logs === undefined ? (
+          <p className="text-foreground-muted">Caricamento…</p>
+        ) : logs.length === 0 ? (
+          <p className="text-foreground-muted">Nessun invio registrato.</p>
+        ) : (
+          logs.map((log) => (
+            <div
+              key={log._id}
+              className={`flex items-center justify-between border p-2.5 text-sm ${
+                log.status === "failed"
+                  ? "border-red-500/40 bg-red-500/5"
+                  : "border-border"
+              }`}
+            >
+              <div>
+                <span className="text-foreground">{EMAIL_TYPE_LABEL[log.type] ?? log.type}</span>
+                <span className="ml-2 text-foreground-muted">→ {log.recipient}</span>
+                {log.error && <span className="ml-2 text-xs text-red-600">{log.error}</span>}
+              </div>
+              <span className="tech-label whitespace-nowrap">
+                {DateTime.fromMillis(log.createdAt).toFormat("d MMM, HH:mm")}
+              </span>
             </div>
           ))
         )}
