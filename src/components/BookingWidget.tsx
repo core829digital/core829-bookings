@@ -7,6 +7,7 @@ import { DateTime } from "luxon";
 import { api } from "../../convex/_generated/api";
 import { Button } from "@/components/ui/Button";
 import { CORE829_SERVICES } from "@/lib/services";
+import { useTranslation } from "@/lib/i18n/LocaleProvider";
 
 const WINDOW_DAYS = 7;
 
@@ -54,6 +55,7 @@ export function BookingWidget({
   theme?: WidgetTheme;
 }) {
   useGoogleFont(theme?.font);
+  const { t } = useTranslation();
 
   const eventType = useQuery(api.eventTypes.getBySlug, { slug });
   const bookerTimezone = useMemo(
@@ -88,14 +90,14 @@ export function BookingWidget({
   if (eventType === undefined) {
     return (
       <div className={wrapperClass} style={themeStyle}>
-        Caricamento…
+        {t("widget_loading")}
       </div>
     );
   }
   if (eventType === null) {
     return (
       <div className={`${wrapperClass} text-foreground-muted`} style={themeStyle}>
-        Questo tipo di appuntamento non esiste o non è più disponibile.
+        {t("widget_notFound")}
       </div>
     );
   }
@@ -103,17 +105,15 @@ export function BookingWidget({
   if (confirmation) {
     return (
       <div className={`${wrapperClass} text-center`} style={themeStyle}>
-        <h2 className="text-2xl font-semibold text-foreground">Prenotazione confermata</h2>
-        <p className="mt-2 text-foreground-muted">
-          Riceverai un&apos;email di conferma a breve.
-        </p>
+        <h2 className="text-2xl font-semibold text-foreground">{t("widget_confirmedTitle")}</h2>
+        <p className="mt-2 text-foreground-muted">{t("widget_confirmedBody")}</p>
         <a
           href={`/bookings/${confirmation.cancelToken}`}
           target={compact ? "_blank" : undefined}
           rel={compact ? "noopener noreferrer" : undefined}
           className="link-ghost mt-6 inline-block"
         >
-          Gestisci la prenotazione
+          {t("widget_manage")}
         </a>
         {showLogo && <WidgetBrandBadge />}
       </div>
@@ -171,7 +171,7 @@ export function BookingWidget({
           </div>
 
           {slots === undefined ? (
-            <p className="text-foreground-muted">Caricamento slot…</p>
+            <p className="text-foreground-muted">{t("widget_loadingSlots")}</p>
           ) : (
             <div className={compact ? "grid gap-4 sm:grid-cols-2" : "grid gap-6 sm:grid-cols-2 lg:grid-cols-3"}>
               {daysInWindow.map((day) => {
@@ -182,7 +182,7 @@ export function BookingWidget({
                       {DateTime.fromISO(day).toFormat("ccc d MMM")}
                     </p>
                     {daySlots.length === 0 ? (
-                      <p className="text-xs text-foreground-muted">Nessuno slot</p>
+                      <p className="text-xs text-foreground-muted">{t("widget_noSlots")}</p>
                     ) : (
                       <div className="flex flex-wrap gap-1.5">
                         {daySlots.map((slot) => (
@@ -211,6 +211,7 @@ export function BookingWidget({
 }
 
 function WidgetBrandBadge() {
+  const { t } = useTranslation();
   return (
     <a
       href="https://bookings.core829.net"
@@ -219,7 +220,7 @@ function WidgetBrandBadge() {
       className="mt-8 inline-flex items-center gap-2 text-xs text-foreground-muted hover:text-foreground"
     >
       <Image src="/core829branding/core829-logo.webp" alt="" width={16} height={16} />
-      Prenotazioni gestite da CORE829
+      {t("widget_poweredBy")}
     </a>
   );
 }
@@ -241,6 +242,7 @@ function BookingForm({
   onBack: () => void;
   onBooked: (cancelToken: string) => void;
 }) {
+  const { t } = useTranslation();
   const createBooking = useMutation(api.bookings.create);
   const rescheduleBooking = useMutation(api.bookings.reschedule);
   const [name, setName] = useState("");
@@ -253,7 +255,7 @@ function BookingForm({
   return (
     <div className="mt-6 max-w-md">
       <button onClick={onBack} className="link-ghost mb-4 text-sm">
-        ← Cambia orario
+        {t("widget_changeTime")}
       </button>
       <p className="tech-label mb-1">{eventTypeName}</p>
       <p className="mb-4 text-foreground">
@@ -283,7 +285,7 @@ function BookingForm({
               });
           submission
             .then((result) => onBooked(result.cancelToken))
-            .catch(() => setError("Questo slot non è più disponibile. Scegline un altro."))
+            .catch(() => setError(t("widget_slotGone")))
             .finally(() => setSubmitting(false));
         }}
       >
@@ -291,7 +293,7 @@ function BookingForm({
           <>
             <input
               className="input-core829"
-              placeholder="Nome"
+              placeholder={t("widget_name")}
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -299,7 +301,7 @@ function BookingForm({
             <input
               className="input-core829"
               type="email"
-              placeholder="Email"
+              placeholder={t("widget_email")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -309,7 +311,7 @@ function BookingForm({
               value={service}
               onChange={(e) => setService(e.target.value)}
             >
-              <option value="">Di cosa vuoi parlare? (opzionale)</option>
+              <option value="">{t("widget_servicePlaceholder")}</option>
               {CORE829_SERVICES.map((s) => (
                 <option key={s} value={s}>
                   {s}
@@ -318,7 +320,7 @@ function BookingForm({
             </select>
             <textarea
               className="input-core829"
-              placeholder="Note (opzionale)"
+              placeholder={t("widget_notes")}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
@@ -327,7 +329,7 @@ function BookingForm({
         )}
         {error && <p className="text-sm text-accent">{error}</p>}
         <Button type="submit" disabled={submitting} className="w-full">
-          {rescheduleToken ? "Conferma nuovo orario" : "Conferma prenotazione"}
+          {rescheduleToken ? t("widget_confirmNewTime") : t("widget_confirmBooking")}
         </Button>
       </form>
     </div>

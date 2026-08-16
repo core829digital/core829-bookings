@@ -134,6 +134,16 @@ export const createForOrganization = internalMutation({
       bookingId,
       event: "booking.created",
     });
+    await ctx.scheduler.runAfter(0, internal.google.syncBookingToCalendar, {
+      bookingId,
+      hostUserId: eventType.ownerUserId,
+      inviteeName: args.inviteeName,
+      inviteeEmail: args.inviteeEmail,
+      eventTypeName: eventType.name,
+      startTime: args.startTime,
+      endTime,
+      notes: args.notes,
+    });
 
     return { bookingId, startTime: args.startTime, endTime, cancelToken };
   },
@@ -176,6 +186,12 @@ export const cancelForOrganization = internalMutation({
       bookingId,
       event: "booking.cancelled",
     });
+    if (booking.googleEventId) {
+      await ctx.scheduler.runAfter(0, internal.google.deleteCalendarEvent, {
+        hostUserId: booking.hostUserId,
+        googleEventId: booking.googleEventId,
+      });
+    }
     return { id: bookingId, status: "cancelled" };
   },
 });
@@ -243,6 +259,22 @@ export const rescheduleForOrganization = internalMutation({
     await ctx.scheduler.runAfter(0, internal.webhooks.scheduleForBooking, {
       bookingId: newBookingId,
       event: "booking.rescheduled",
+    });
+    if (oldBooking.googleEventId) {
+      await ctx.scheduler.runAfter(0, internal.google.deleteCalendarEvent, {
+        hostUserId: oldBooking.hostUserId,
+        googleEventId: oldBooking.googleEventId,
+      });
+    }
+    await ctx.scheduler.runAfter(0, internal.google.syncBookingToCalendar, {
+      bookingId: newBookingId,
+      hostUserId: oldBooking.hostUserId,
+      inviteeName: oldBooking.inviteeName,
+      inviteeEmail: oldBooking.inviteeEmail,
+      eventTypeName: eventType.name,
+      startTime: newStartTime,
+      endTime: newEndTime,
+      notes: oldBooking.notes,
     });
 
     return { bookingId: newBookingId, startTime: newStartTime, endTime: newEndTime };

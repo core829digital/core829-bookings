@@ -1,6 +1,11 @@
+"use client";
+
 import Badge from "@/components/ui/Badge";
+import { useTranslation } from "@/lib/i18n/LocaleProvider";
 
 export function PublicFooter() {
+  const { t } = useTranslation();
+
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto w-full max-w-container px-6 py-12 sm:px-12 lg:px-20">
@@ -8,7 +13,7 @@ export function PublicFooter() {
           <div>
             <Badge tone="outline">CORE829 SRL</Badge>
             <p className="mt-3 text-sm text-foreground-muted">
-              Agenzia Digitale
+              {t("footer_agency")}
               <br />
               Str. Mihai Eminescu, 10, Roman, Romania
               <br />
@@ -35,13 +40,13 @@ export function PublicFooter() {
                 rel="noopener noreferrer"
                 className="link-ghost"
               >
-                Recensioni Trustpilot
+                {t("footer_reviews")}
               </a>
             </p>
           </div>
         </div>
         <p className="mt-10 text-xs text-foreground-muted">
-          © {new Date().getFullYear()} CORE829 SRL. Tutti i diritti riservati.
+          © {new Date().getFullYear()} CORE829 SRL. {t("footer_rights")}
         </p>
       </div>
     </footer>

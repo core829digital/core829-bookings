@@ -20,6 +20,11 @@ export default defineSchema({
     phone: v.optional(v.string()),
     phoneVerificationTime: v.optional(v.number()),
     isAnonymous: v.optional(v.boolean()),
+    // Google Calendar sync (opt-in per team member). Refresh tokens don't
+    // expire on Google's side unless revoked; access tokens are fetched
+    // fresh per sync from this instead of being cached.
+    googleRefreshToken: v.optional(v.string()),
+    googleCalendarConnectedAt: v.optional(v.number()),
   }).index("by_email", ["email"]),
 
   eventTypes: defineTable({
@@ -86,6 +91,9 @@ export default defineSchema({
     // In-app notification tracking: undefined/false = shows as "new" on the
     // team calendar until a team member opens it.
     seenByTeam: v.optional(v.boolean()),
+    // Set once the booking is pushed to the host's Google Calendar — lets
+    // us update/delete the same event on reschedule/cancel.
+    googleEventId: v.optional(v.string()),
   })
     .index("by_host_and_time", ["hostUserId", "startTime"])
     .index("by_cancelToken", ["cancelToken"])

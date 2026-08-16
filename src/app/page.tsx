@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { PublicHeader } from "@/components/PublicHeader";
 import { PublicFooter } from "@/components/PublicFooter";
 import { BookingWidget } from "@/components/BookingWidget";
+import { useTranslation } from "@/lib/i18n/LocaleProvider";
 
 const VALUE_PROPS = [
   {
@@ -32,6 +33,7 @@ export default function Home() {
   const { isAuthenticated, isLoading } = useConvexAuth();
   const activeEventTypes = useQuery(api.eventTypes.listActive);
   const primaryEventType = activeEventTypes?.[0];
+  const { t } = useTranslation();
 
   return (
     <>
@@ -47,16 +49,12 @@ export default function Home() {
           />
           <div className="relative z-10 flex flex-1 flex-col justify-center px-6 py-20 sm:px-12 lg:px-20">
             <p className="text-xs uppercase tracking-[0.25em] text-white/70">
-              CORE829 · Agenzia Digitale
+              {t("home_kicker")}
             </p>
             <h1 className="mt-4 max-w-xl text-4xl font-semibold text-white sm:text-5xl">
-              Prenota il tuo appuntamento in meno di un minuto
+              {t("home_title")}
             </h1>
-            <p className="mt-4 max-w-md text-white/80">
-              Il sistema di prenotazione costruito da CORE829: calendario in
-              tempo reale, promemoria automatici e un widget pronto per
-              essere integrato in qualsiasi sito.
-            </p>
+            <p className="mt-4 max-w-md text-white/80">{t("home_subtitle")}</p>
             <div className="mt-8 flex flex-wrap items-center gap-4">
               {primaryEventType && (
                 <a href="#prenota" className="inline-block w-fit">
@@ -64,7 +62,7 @@ export default function Home() {
                     variant="secondary"
                     className="border-white bg-white text-foreground hover:bg-transparent hover:text-white"
                   >
-                    Prenota ora
+                    {t("home_bookNow")}
                   </Button>
                 </a>
               )}
@@ -74,7 +72,7 @@ export default function Home() {
                     variant="secondary"
                     className="border-white text-white hover:bg-white hover:text-foreground"
                   >
-                    {isAuthenticated ? "Vai alla dashboard" : "Accedi al pannello team"}
+                    {isAuthenticated ? t("home_dashboard") : t("home_teamLogin")}
                   </Button>
                 </a>
               )}

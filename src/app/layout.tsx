@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { ConvexClientProvider } from "@/components/ConvexClientProvider";
+import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
 import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -37,7 +38,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <ConvexAuthNextjsServerProvider>
       <html lang="it" className={`${jetbrainsMono.variable} h-full antialiased`}>
         <body className="min-h-full flex flex-col">
-          <ConvexClientProvider>{children}</ConvexClientProvider>
+          <ConvexClientProvider>
+            <LocaleProvider>{children}</LocaleProvider>
+          </ConvexClientProvider>
         </body>
       </html>
     </ConvexAuthNextjsServerProvider>

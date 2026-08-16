@@ -4,9 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useConvexAuth } from "convex/react";
 import { Button } from "@/components/ui/Button";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useTranslation } from "@/lib/i18n/LocaleProvider";
 
 export function PublicHeader() {
   const { isAuthenticated, isLoading } = useConvexAuth();
+  const { t } = useTranslation();
 
   return (
     <header className="border-b border-border">
@@ -17,16 +20,19 @@ export function PublicHeader() {
         </Link>
         <nav className="hidden items-center gap-6 sm:flex">
           <Link href="/pricing" className="text-sm text-foreground-muted hover:text-foreground">
-            Prezzi
+            {t("nav_pricing")}
           </Link>
         </nav>
-        {!isLoading && (
-          <Link href={isAuthenticated ? "/calendar" : "/signin"}>
-            <Button variant="secondary">
-              {isAuthenticated ? "Dashboard" : "Accedi"}
-            </Button>
-          </Link>
-        )}
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher />
+          {!isLoading && (
+            <Link href={isAuthenticated ? "/calendar" : "/signin"}>
+              <Button variant="secondary">
+                {isAuthenticated ? t("nav_dashboard") : t("nav_signin")}
+              </Button>
+            </Link>
+          )}
+        </div>
       </div>
     </header>
   );

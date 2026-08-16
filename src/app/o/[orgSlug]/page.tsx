@@ -6,6 +6,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { PublicHeader } from "@/components/PublicHeader";
 import { PublicFooter } from "@/components/PublicFooter";
+import { useTranslation } from "@/lib/i18n/LocaleProvider";
 
 const LOCATION_LABELS: Record<string, string> = {
   google_meet: "Google Meet",
@@ -21,12 +22,13 @@ export default function OrganizationBookingPage({
 }) {
   const { orgSlug } = use(params);
   const data = useQuery(api.eventTypes.listByOrganizationSlug, { organizationSlug: orgSlug });
+  const { t } = useTranslation();
 
   if (data === undefined) {
     return (
       <>
         <PublicHeader />
-        <main className="flex flex-1 items-center justify-center">Caricamento…</main>
+        <main className="flex flex-1 items-center justify-center">{t("widget_loading")}</main>
         <PublicFooter />
       </>
     );
@@ -36,7 +38,7 @@ export default function OrganizationBookingPage({
       <>
         <PublicHeader />
         <main className="flex flex-1 items-center justify-center text-foreground-muted">
-          Questa pagina di prenotazione non esiste.
+          {t("org_notFound")}
         </main>
         <PublicFooter />
       </>
@@ -47,13 +49,11 @@ export default function OrganizationBookingPage({
     <>
       <PublicHeader />
       <main className="mx-auto w-full max-w-container flex-1 px-6 py-16">
-        <p className="kicker mb-2">Prenota con</p>
+        <p className="kicker mb-2">{t("org_bookWith")}</p>
         <h1 className="text-3xl font-semibold text-foreground">{data.organizationName}</h1>
 
         {data.eventTypes.length === 0 ? (
-          <p className="mt-8 text-foreground-muted">
-            Nessun appuntamento disponibile al momento.
-          </p>
+          <p className="mt-8 text-foreground-muted">{t("org_noEvents")}</p>
         ) : (
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {data.eventTypes.map((et) => (
@@ -73,7 +73,7 @@ export default function OrganizationBookingPage({
         )}
 
         <p className="mt-12 text-xs text-foreground-muted">
-          Sistema di prenotazione fornito da{" "}
+          {t("org_providedBy")}{" "}
           <Link href="/" className="link-ghost">
             CORE829
           </Link>

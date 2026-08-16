@@ -1,4 +1,3 @@
-
 "use client";
 
 import { use, useState } from "react";
@@ -8,6 +7,7 @@ import { api } from "../../../../convex/_generated/api";
 import { Button } from "@/components/ui/Button";
 import { PublicHeader } from "@/components/PublicHeader";
 import { PublicFooter } from "@/components/PublicFooter";
+import { useTranslation } from "@/lib/i18n/LocaleProvider";
 
 export default function ManageBookingPage({
   params,
@@ -19,12 +19,13 @@ export default function ManageBookingPage({
   const cancelBooking = useMutation(api.bookings.cancel);
   const [cancelling, setCancelling] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   if (data === undefined) {
     return (
       <>
         <PublicHeader />
-        <main className="flex flex-1 items-center justify-center">Caricamento…</main>
+        <main className="flex flex-1 items-center justify-center">{t("widget_loading")}</main>
         <PublicFooter />
       </>
     );
@@ -34,7 +35,7 @@ export default function ManageBookingPage({
       <>
         <PublicHeader />
         <main className="flex flex-1 items-center justify-center text-foreground-muted">
-          Prenotazione non trovata.
+          {t("manage_notFound")}
         </main>
         <PublicFooter />
       </>
@@ -59,17 +60,15 @@ export default function ManageBookingPage({
         </p>
 
         {booking.status === "cancelled" && (
-          <p className="mt-6 text-accent">Questa prenotazione è stata cancellata.</p>
+          <p className="mt-6 text-accent">{t("manage_cancelled")}</p>
         )}
         {booking.status === "rescheduled" && (
-          <p className="mt-6 text-foreground-muted">
-            Questa prenotazione è stata riprogrammata.
-          </p>
+          <p className="mt-6 text-foreground-muted">{t("manage_rescheduled")}</p>
         )}
         {booking.status === "confirmed" && (
           <div className="mt-6 flex gap-3">
             <a href={`/book/${eventType!.slug}?reschedule=${token}`}>
-              <Button variant="secondary">Riprogramma</Button>
+              <Button variant="secondary">{t("manage_reschedule")}</Button>
             </a>
             <Button
               variant="secondary"
@@ -78,11 +77,11 @@ export default function ManageBookingPage({
                 setError(null);
                 setCancelling(true);
                 cancelBooking({ cancelToken: token })
-                  .catch(() => setError("Impossibile cancellare la prenotazione."))
+                  .catch(() => setError(t("manage_cancelError")))
                   .finally(() => setCancelling(false));
               }}
             >
-              Cancella
+              {t("manage_cancel")}
             </Button>
           </div>
         )}

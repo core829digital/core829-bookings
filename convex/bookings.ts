@@ -136,6 +136,16 @@ export const create = mutation({
       bookingId,
       event: "booking.created",
     });
+    await ctx.scheduler.runAfter(0, internal.google.syncBookingToCalendar, {
+      bookingId,
+      hostUserId: eventType.ownerUserId,
+      inviteeName: args.inviteeName,
+      inviteeEmail: args.inviteeEmail,
+      eventTypeName: eventType.name,
+      startTime: args.startTime,
+      endTime,
+      notes: args.notes,
+    });
 
     return { bookingId, cancelToken };
   },
@@ -168,6 +178,12 @@ export const cancel = mutation({
       bookingId: booking._id,
       event: "booking.cancelled",
     });
+    if (booking.googleEventId) {
+      await ctx.scheduler.runAfter(0, internal.google.deleteCalendarEvent, {
+        hostUserId: booking.hostUserId,
+        googleEventId: booking.googleEventId,
+      });
+    }
   },
 });
 
@@ -232,6 +248,22 @@ export const reschedule = mutation({
     await ctx.scheduler.runAfter(0, internal.webhooks.scheduleForBooking, {
       bookingId,
       event: "booking.rescheduled",
+    });
+    if (oldBooking.googleEventId) {
+      await ctx.scheduler.runAfter(0, internal.google.deleteCalendarEvent, {
+        hostUserId: oldBooking.hostUserId,
+        googleEventId: oldBooking.googleEventId,
+      });
+    }
+    await ctx.scheduler.runAfter(0, internal.google.syncBookingToCalendar, {
+      bookingId,
+      hostUserId: oldBooking.hostUserId,
+      inviteeName: oldBooking.inviteeName,
+      inviteeEmail: oldBooking.inviteeEmail,
+      eventTypeName: eventType.name,
+      startTime: newStartTime,
+      endTime: newEndTime,
+      notes: oldBooking.notes,
     });
 
     return { bookingId, cancelToken: newCancelToken };
@@ -361,6 +393,16 @@ export const createManual = mutation({
       endTime,
       cancelToken,
     });
+    await ctx.scheduler.runAfter(0, internal.google.syncBookingToCalendar, {
+      bookingId,
+      hostUserId: user._id,
+      inviteeName: args.inviteeName,
+      inviteeEmail: args.inviteeEmail,
+      eventTypeName: eventType.name,
+      startTime: args.startTime,
+      endTime,
+      notes: args.notes,
+    });
 
     return { bookingId, cancelToken };
   },
@@ -375,6 +417,12 @@ export const cancelAsHost = mutation({
       throw new Error("Booking not found");
     }
     if (booking.status !== "confirmed") throw new Error("Booking already cancelled");
+    if (booking.googleEventId) {
+      await ctx.scheduler.runAfter(0, internal.google.deleteCalendarEvent, {
+        hostUserId: user._id,
+        googleEventId: booking.googleEventId,
+      });
+    }
     await ctx.db.patch(bookingId, { status: "cancelled" });
   },
 });

@@ -15,6 +15,7 @@ import type * as bookings from "../bookings.js";
 import type * as crons from "../crons.js";
 import type * as emails from "../emails.js";
 import type * as eventTypes from "../eventTypes.js";
+import type * as google from "../google.js";
 import type * as http from "../http.js";
 import type * as internal_bookings from "../internal/bookings.js";
 import type * as lib_apiKeys from "../lib/apiKeys.js";
@@ -41,6 +42,7 @@ declare const fullApi: ApiFromModules<{
   crons: typeof crons;
   emails: typeof emails;
   eventTypes: typeof eventTypes;
+  google: typeof google;
   http: typeof http;
   "internal/bookings": typeof internal_bookings;
   "lib/apiKeys": typeof lib_apiKeys;
