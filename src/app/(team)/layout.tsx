@@ -7,6 +7,7 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { DateTime } from "luxon";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "@/components/ui/Button";
+import { GoogleCalendarConnect } from "@/components/GoogleCalendarConnect";
 
 const NAV_ITEMS = [
   { href: "/calendar", label: "Calendario" },
@@ -75,6 +76,7 @@ export default function TeamLayout({ children }: { children: ReactNode }) {
           </nav>
           <div className="flex items-center gap-4">
             <NotificationBell />
+            <GoogleCalendarConnect compact />
             <span className="tech-label">
               {currentUser?.name} · {currentUser?.role}
             </span>
