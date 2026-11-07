@@ -1,13 +1,23 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { ConvexClientProvider } from "@/components/ConvexClientProvider";
 import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
 import "./globals.css";
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains",
+// Stesso stack di Andromedia Web e di core829.net: "Saans" se installato sul dispositivo, altrimenti Inter
+// self-hosted da next/font (font variabile: normale, bold e ogni peso intermedio), piu' JetBrains Mono per i
+// dettagli tecnici. I token --font-* sono in globals.css.
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
 });
 
 const title = "CORE829 Bookings — Prenota un appuntamento online";
@@ -36,7 +46,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <ConvexAuthNextjsServerProvider>
-      <html lang="it" className={`${jetbrainsMono.variable} h-full antialiased`}>
+      <html lang="it" className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}>
         <body className="min-h-full flex flex-col">
           <ConvexClientProvider>
             <LocaleProvider>{children}</LocaleProvider>

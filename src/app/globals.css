@@ -13,6 +13,30 @@
   --color-surface: #f7f7f7;
 }
 
+/* Saans (Displaay) e' un font commerciale: se e' installato sul dispositivo viene usato direttamente,
+   altrimenti si usa Inter (self-hosted da next/font). Configurazione identica ad Andromedia Web. */
+@font-face {
+  font-family: "Saans";
+  src: local("Saans"), local("Saans Regular"), local("Saans-Regular");
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Saans Display";
+  src: local("Saans Display"), local("SaansDisplay-Regular"), local("Saans Display Regular"), local("Saans");
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Saans Text";
+  src: local("Saans Text"), local("SaansText-Regular"), local("Saans Text Regular"), local("Saans");
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme inline {
   --color-background: var(--color-background);
   --color-foreground: var(--color-foreground);
@@ -21,8 +45,9 @@
   --color-accent-hover: var(--color-accent-hover);
   --color-border: var(--color-border);
   --color-surface: var(--color-surface);
-  --font-sans: var(--font-jetbrains), ui-monospace, "SFMono-Regular", monospace;
-  --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", monospace;
+  --font-sans: "Saans Text", "Saans", var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Saans Display", "Saans", var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
   --container-container: 76rem;
 }
 
@@ -34,8 +59,19 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: var(--font-sans);
+    /* Le utility di Tailwind (theme inline) risolvono lo stack dei font; var(--font-sans) qui non e' definita su :root. */
+    @apply font-sans;
     line-height: 1.5;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display;
+    font-weight: 560; /* come Andromedia Web */
+    letter-spacing: -0.03em;
+    text-wrap: balance;
   }
 
   ::selection {
@@ -46,14 +82,6 @@
   :focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 3px;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4 {
-    font-weight: 600;
-    letter-spacing: -0.02em;
   }
 }
 
