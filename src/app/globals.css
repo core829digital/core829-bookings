@@ -52,6 +52,13 @@
 }
 
 @layer base {
+  /* Resa del testo identica a core829.net: stessi pesi e contorni su ogni schermo. */
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
   * {
     border-color: var(--color-border);
   }
