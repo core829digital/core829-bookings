@@ -17,7 +17,7 @@ interface Slot {
 }
 
 export interface WidgetTheme {
-  accent?: string; // any valid CSS color, e.g. "#e11d2e" — defaults to CORE829 red
+  accent?: string; // any valid CSS color, e.g. "#e52139" — defaults to CORE829 red
   font?: string; // Google Fonts family name, e.g. "Inter" — loaded on demand
   showLogo?: boolean; // "Powered by CORE829" footer badge — default true
 }
@@ -82,7 +82,7 @@ export function BookingWidget({
 
   const wrapperClass = compact ? "" : "mx-auto w-full max-w-container flex-1 px-6 py-16";
   const themeStyle = {
-    ...(theme?.accent ? { "--color-accent": theme.accent } : {}),
+    ...(theme?.accent ? { "--color-accent": theme.accent, "--color-accent-text": theme.accent } : {}),
     ...(theme?.font ? { fontFamily: `"${theme.font}", var(--font-sans)` } : {}),
   } as React.CSSProperties;
   const showLogo = theme?.showLogo ?? true;

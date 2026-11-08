@@ -5,12 +5,14 @@
    ============================================================ */
 :root {
   --color-background: #ffffff;
-  --color-foreground: #1a1a1a;
-  --color-foreground-muted: #4a4a4a;
-  --color-accent: #e11d2e;
-  --color-accent-hover: #c4121f;
-  --color-border: #e5e5e5;
-  --color-surface: #f7f7f7;
+  --color-foreground: #111217; /* Obsidian Black */
+  --color-foreground-muted: #4a5160;
+  --color-accent: #e52139; /* Racing Red, variante AA per pulsanti (4,56:1 con testo bianco) */
+  --color-accent-text: #d92037; /* rosso per testo piccolo: >= 4,5:1 anche su Ice Grey chiaro */
+  --color-racing: #ef233c; /* Racing Red puro: grafica e superfici grandi */
+  --color-accent-hover: #b8132a;
+  --color-border: #dfe5eb; /* Ice Grey */
+  --color-surface: #f2f5f8;
 }
 
 /* Saans (Displaay) e' un font commerciale: se e' installato sul dispositivo viene usato direttamente,
@@ -98,7 +100,8 @@
   }
 
   .kicker {
-    @apply font-mono text-xs uppercase tracking-[0.25em] text-accent;
+    @apply font-mono text-xs uppercase tracking-[0.25em];
+    color: var(--color-accent-text);
   }
 
   .tech-label {
@@ -108,4 +111,9 @@
   .link-ghost {
     @apply relative inline-flex items-center gap-2 text-foreground no-underline hover:text-accent;
   }
+}
+
+/* Il testo rosso piccolo usa la variante AA (--color-accent-text); fondi, bordi e pulsanti restano Racing Red. */
+.text-accent {
+  color: var(--color-accent-text);
 }

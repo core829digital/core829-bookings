@@ -68,7 +68,7 @@ export default function CalendarPage() {
       <div className="mt-4 flex flex-wrap items-center gap-4">
         <Legend color="bg-emerald-500" label="Nuova" />
         <Legend color="bg-sky-500" label="Riprogrammata" />
-        <Legend color="bg-red-500" label="Cancellata" />
+        <Legend color="bg-accent" label="Cancellata" />
         <Legend color="bg-accent" label="Confermata" />
       </div>
 
@@ -145,7 +145,7 @@ export default function CalendarPage() {
 
             const colorClass = !booking.seenByTeam
               ? booking.status === "cancelled"
-                ? "border-red-500/50 bg-red-500/10 text-red-600"
+                ? "border-accent/50 bg-accent/10 text-accent"
                 : booking.status === "rescheduled"
                   ? "border-sky-500/50 bg-sky-500/10 text-sky-600"
                   : "border-emerald-500/50 bg-emerald-500/10 text-emerald-600"

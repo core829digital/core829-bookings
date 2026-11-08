@@ -11,7 +11,7 @@ import { requireTeamUser } from "./authz";
  * I client di posta non caricano font web: il sistema usa il primo disponibile. Si applica a tutto il messaggio in un punto solo.
  */
 export const EMAIL_FONT = "'Saans Text',Saans,Inter,Arial,Helvetica,sans-serif";
-export const withEmailFont = (html: string): string => `<div style="font-family:${EMAIL_FONT};font-size:15px;line-height:1.6;color:#1a1a1a">${html}</div>`;
+export const withEmailFont = (html: string): string => `<div style="font-family:${EMAIL_FONT};font-size:15px;line-height:1.6;color:#111217">${html}</div>`;
 
 const RETRY_DELAY_MS = 2 * 60_000;
 const MAX_ATTEMPTS = 2;
@@ -138,7 +138,7 @@ export const sendBookingConfirmation = internalAction({
     const html = `
       <p>Ciao ${escapeHtml(args.inviteeName)},</p>
       <p>La tua prenotazione per <strong>${escapeHtml(args.eventTypeName)}</strong> è confermata.</p>
-      <table cellpadding="0" cellspacing="0" style="font-family:inherit;font-size:14px;color:#111">
+      <table cellpadding="0" cellspacing="0" style="font-family:inherit;font-size:14px;color:#111217">
         <tr><td style="padding:4px 12px 4px 0;font-weight:600">Quando</td><td>${escapeHtml(when)} (${escapeHtml(args.inviteeTimezone)})</td></tr>
       </table>
       <p><a href="https://bookings.core829.net/bookings/${args.cancelToken}">Gestisci o cancella la prenotazione</a></p>
@@ -179,7 +179,7 @@ export const sendBookingReminder = internalAction({
     const html = `
       <p>Ciao ${escapeHtml(args.inviteeName)},</p>
       <p>Promemoria: il tuo appuntamento <strong>${escapeHtml(args.eventTypeName)}</strong> è ${label}.</p>
-      <table cellpadding="0" cellspacing="0" style="font-family:inherit;font-size:14px;color:#111">
+      <table cellpadding="0" cellspacing="0" style="font-family:inherit;font-size:14px;color:#111217">
         <tr><td style="padding:4px 12px 4px 0;font-weight:600">Quando</td><td>${escapeHtml(when)} (${escapeHtml(args.inviteeTimezone)})</td></tr>
       </table>
     `;
@@ -225,7 +225,7 @@ export const sendBookingNotificationToOffice = internalAction({
 
     const html = `
       <p>È stata ricevuta una nuova prenotazione.</p>
-      <table cellpadding="0" cellspacing="0" style="font-family:inherit;font-size:14px;color:#111">
+      <table cellpadding="0" cellspacing="0" style="font-family:inherit;font-size:14px;color:#111217">
         <tr><td style="padding:4px 12px 4px 0;font-weight:600">A chi</td><td>${escapeHtml(args.inviteeName)} &lt;${escapeHtml(args.inviteeEmail)}&gt;</td></tr>
         <tr><td style="padding:4px 12px 4px 0;font-weight:600">Quando</td><td>${escapeHtml(when)} (${escapeHtml(args.inviteeTimezone)})</td></tr>
         <tr><td style="padding:4px 12px 4px 0;font-weight:600">Durata</td><td>${durationMinutes} min</td></tr>

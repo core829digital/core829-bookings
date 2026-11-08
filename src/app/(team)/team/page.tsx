@@ -129,14 +129,14 @@ function EmailAuditLog() {
               key={log._id}
               className={`flex items-center justify-between border p-2.5 text-sm ${
                 log.status === "failed"
-                  ? "border-red-500/40 bg-red-500/5"
+                  ? "border-accent/40 bg-accent/5"
                   : "border-border"
               }`}
             >
               <div>
                 <span className="text-foreground">{EMAIL_TYPE_LABEL[log.type] ?? log.type}</span>
                 <span className="ml-2 text-foreground-muted">→ {log.recipient}</span>
-                {log.error && <span className="ml-2 text-xs text-red-600">{log.error}</span>}
+                {log.error && <span className="ml-2 text-xs text-accent">{log.error}</span>}
               </div>
               <span className="tech-label whitespace-nowrap">
                 {DateTime.fromMillis(log.createdAt).toFormat("d MMM, HH:mm")}
