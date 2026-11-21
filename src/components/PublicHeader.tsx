@@ -23,7 +23,7 @@ export function PublicHeader() {
     <header className="sticky top-0 z-40 px-3 pt-3 sm:px-5">
       <div className="glass-bar mx-auto flex max-w-[90rem] items-center justify-between gap-3 rounded-full py-1.5 pl-4 pr-1.5 sm:pl-5">
         <Link href="/" aria-label="CORE829 Bookings" className="flex min-h-11 items-center gap-3">
-          <Image src="/brand/symbol-red.svg" alt="CORE829" width={44} height={30} priority unoptimized className="h-7 w-auto" />
+          <Image src="/brand/app-icon.svg" alt="CORE829" width={40} height={40} priority unoptimized className="h-9 w-9 rounded-[22%]" />
           <span className="hidden font-mono text-[10px] uppercase tracking-[0.12em] text-foreground-muted sm:inline">
             Bookings
           </span>

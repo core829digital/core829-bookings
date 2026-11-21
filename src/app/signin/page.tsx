@@ -17,12 +17,12 @@ export default function SignInPage() {
     <main className="flex flex-1 items-center justify-center px-6 py-24">
       <div className="w-full max-w-sm">
         <Image
-          src="/brand/symbol-red.svg"
+          src="/brand/app-icon.svg"
           alt="CORE829"
-          width={84}
-          height={57}
+          width={64}
+          height={64}
           unoptimized
-          className="mx-auto mb-8 h-14 w-auto"
+          className="mx-auto mb-8 h-16 w-16 rounded-[22%]"
         />
         <div className="mb-6 flex overflow-hidden rounded-full border border-border">
           <button

@@ -1,22 +1,23 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, Michroma } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { ConvexClientProvider } from "@/components/ConvexClientProvider";
 import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
 import "./globals.css";
 
-// Tipografia del brand CORE829 (Brand Guidelines 1.0): Michroma per titoli ed etichette, DM Sans per testi e
-// interfacce. Self-hosted da next/font; i token --font-* sono in globals.css.
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
-  subsets: ["latin", "latin-ext"],
+// Stack tipografico: "Saans" se installato sul dispositivo, altrimenti Inter self-hosted da next/font
+// (subset latino, latino esteso, cirillico, greco: il sito è in 24 lingue), più JetBrains Mono per i
+// dettagli tecnici. Michroma/DM Sans (brand) valutati e scartati: non coprono cirillico e greco.
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin", "latin-ext", "cyrillic", "greek"],
   display: "swap",
 });
 
-const michroma = Michroma({
-  variable: "--font-michroma",
-  subsets: ["latin", "latin-ext"],
-  weight: "400",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin", "cyrillic"],
+  weight: ["400", "500"],
   display: "swap",
 });
 
@@ -50,7 +51,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <ConvexAuthNextjsServerProvider>
-      <html lang="it" className={`${dmSans.variable} ${michroma.variable} h-full antialiased`}>
+      <html lang="it" className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}>
         <body className="min-h-full flex flex-col">
           <ConvexClientProvider>
             <LocaleProvider>{children}</LocaleProvider>

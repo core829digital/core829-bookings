@@ -219,7 +219,7 @@ function WidgetBrandBadge() {
       rel="noopener noreferrer"
       className="mt-8 inline-flex items-center gap-2 text-xs text-foreground-muted hover:text-foreground"
     >
-      <Image src="/brand/symbol-red.svg" alt="" width={22} height={15} unoptimized />
+      <Image src="/brand/app-icon.svg" alt="" width={20} height={20} unoptimized className="rounded-[22%]" />
       {t("widget_poweredBy")}
     </a>
   );
