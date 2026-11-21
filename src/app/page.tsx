@@ -6,6 +6,7 @@ import { useQuery, useConvexAuth } from "convex/react";
 import { Phone, Mail, ArrowRight, Calendar, Globe, Bell, Link2, Webhook, LayoutTemplate, Clock } from "lucide-react";
 import { api } from "../../convex/_generated/api";
 import { buttonClasses } from "@/components/ui/Button";
+import { GlassScene, GLASS } from "@/components/ui/LiquidGlass";
 import { PublicHeader } from "@/components/PublicHeader";
 import { PublicFooter } from "@/components/PublicFooter";
 import { BookingWidget } from "@/components/BookingWidget";
@@ -45,10 +46,12 @@ export default function Home() {
             <h1 className="mt-5 max-w-3xl text-[clamp(1.75rem,1rem+3.4vw,3.6rem)]">{c.heroTitle}</h1>
             <p className="mt-6 max-w-xl text-lg text-ink">{c.heroSubtitle}</p>
             <div className="mt-9 flex flex-wrap items-center gap-3">
-              <Link href="/#prenota" className={buttonClasses("primary", undefined, "dark")}>
-                {c.heroBook}
-                <ArrowRight className="h-4 w-4" aria-hidden />
-              </Link>
+              <GlassScene className="overflow-hidden rounded-full p-2">
+                <Link {...GLASS} href="/#prenota" className={buttonClasses("primary", undefined, "dark")}>
+                  {c.heroBook}
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </Link>
+              </GlassScene>
               <a href={mail} className={buttonClasses("secondary")}>
                 {c.heroEmail}
               </a>

@@ -3,7 +3,7 @@
 /* ============================================================
    CORE829 — Brand Guidelines 1.0 (novembre 2026)
    Rosso Racing #FF2743 · Bianco Polare #F8F8F8 · Nero Pista #141416
-   Tinta piatta (nessuna sfumatura). Michroma (H1, titoli, etichette) + DM Sans (testi, interfacce).
+   Tinta piatta (nessuna sfumatura). Saans → Inter + JetBrains Mono.
    Stessi token e componenti di core829.net.
    ============================================================ */
 :root {
@@ -23,6 +23,30 @@
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Saans (Displaay) e' un font commerciale: se e' installato sul dispositivo viene usato direttamente,
+   altrimenti si usa Inter (self-hosted da next/font). Configurazione identica ad Andromedia Web. */
+@font-face {
+  font-family: "Saans";
+  src: local("Saans"), local("Saans Regular"), local("Saans-Regular");
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Saans Display";
+  src: local("Saans Display"), local("SaansDisplay-Regular"), local("Saans Display Regular"), local("Saans");
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Saans Text";
+  src: local("Saans Text"), local("SaansText-Regular"), local("Saans Text Regular"), local("Saans");
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme inline {
   --color-background: var(--color-background);
   --color-foreground: var(--color-foreground);
@@ -35,10 +59,9 @@
   --color-ink-soft: var(--color-ink-soft);
   --color-on-ink: var(--color-on-ink);
   --color-on-ink-muted: var(--color-on-ink-muted);
-  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-brand: var(--font-michroma), "Arial Black", ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-michroma), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Saans Text", "Saans", var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Saans Display", "Saans", var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
   --container-container: 76rem;
 }
 
@@ -60,22 +83,21 @@
     line-height: 1.55;
   }
 
-  /* Gerarchia del brand: H1 Michroma maiuscolo; H2 e sotto DM Sans SemiBold. */
-  h1 {
-    @apply font-brand;
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 0;
-    line-height: 1.15;
-    text-wrap: balance;
-  }
+  h1,
   h2,
   h3,
   h4 {
-    @apply font-sans;
-    font-weight: 600;
-    letter-spacing: -0.015em;
+    @apply font-display;
+    font-weight: 560;
+    letter-spacing: -0.03em;
     text-wrap: balance;
+  }
+  h1 {
+    line-height: 1.1;
+  }
+  h2,
+  h3 {
+    line-height: 1.2;
   }
 
   ::selection {
@@ -97,20 +119,20 @@
     padding-inline: clamp(1.25rem, 0.5rem + 3.6vw, 5rem);
   }
 
-  /* Titolo di sezione: Michroma maiuscolo */
+  /* Titolo di sezione */
   .title-brand {
-    @apply font-brand;
-    font-size: clamp(1.3rem, 0.9rem + 1.7vw, 2.4rem);
-    font-weight: 400;
-    text-transform: uppercase;
-    line-height: 1.18;
+    @apply font-display;
+    font-size: clamp(1.65rem, 1rem + 2.4vw, 3rem);
+    font-weight: 560;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
   }
 
   .input-core829 {
     @apply w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-foreground-muted placeholder:opacity-60 transition-colors focus:border-foreground focus:outline-none;
   }
 
-  /* Etichetta: Michroma maiuscolo, spaziatura +12% */
+  /* Etichetta tecnica (JetBrains Mono) */
   .kicker {
     @apply font-mono text-[0.6875rem] uppercase tracking-[0.18em];
     color: var(--color-accent-text);
@@ -215,4 +237,28 @@
   .card-lift:hover {
     transform: none;
   }
+}
+
+/* ============================================================
+   Liquid glass (components/ui/LiquidGlass.tsx)
+   Prima del caricamento (o senza JavaScript) la scena è un riquadro Rosso Racing piatto con i pulsanti normali;
+   a libreria pronta l'elemento custom prende il controllo e i pulsanti diventano vetro.
+   ============================================================ */
+.glass-scene {
+  display: block;
+  position: relative;
+  min-height: 0;
+  background: #ff2743;
+}
+.glass-scene:defined {
+  background: transparent;
+}
+.glass-scene:defined [glass] {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  color: #141416;
+  --glass-tint: rgba(255, 39, 67, 0.28);
+  --glass-frost: 0.12;
+  --glass-shadow: 0.35;
 }

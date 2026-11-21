@@ -15,7 +15,7 @@ export function PublicFooter() {
     <footer className="border-t border-border bg-background">
       <div className="container-core829 grid grid-cols-1 gap-12 py-14 md:grid-cols-12 md:gap-8">
         <div className="md:col-span-5">
-          <Image src="/brand/symbol-red.svg" alt="CORE829" width={83} height={56} unoptimized className="h-14 w-auto" />
+          <Image src="/brand/app-icon.svg" alt="CORE829" width={56} height={56} unoptimized className="h-14 w-14 rounded-[22%]" />
           <p className="mt-5 max-w-sm text-sm leading-relaxed text-foreground-muted">
             CORE829 SRL · {t("footer_agency")}
             <br />
