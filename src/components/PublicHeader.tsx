@@ -7,6 +7,8 @@ import { buttonClasses } from "@/components/ui/Button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from "@/lib/i18n/LocaleProvider";
 import { homeCopy } from "@/lib/homeCopy";
+import { GlassScene } from "@/components/ui/LiquidGlass";
+import { GLASS } from "@/lib/glass";
 
 /**
  * Header pubblico: capsula Bianco Polare con il simbolo in Rosso Racing (Brand Guidelines, applicazioni),
@@ -21,9 +23,10 @@ export function PublicHeader() {
 
   return (
     <header className="sticky top-0 z-40 px-3 pt-3 sm:px-5">
-      <div className="glass-bar mx-auto flex max-w-[90rem] items-center justify-between gap-3 rounded-full py-1.5 pl-4 pr-1.5 sm:pl-5">
-        <Link href="/" aria-label="CORE829 Bookings" className="flex min-h-11 items-center gap-3">
-          <Image src="/brand/symbol-black.svg" alt="CORE829" width={61} height={41} priority unoptimized className="h-10 w-auto" />
+      <GlassScene className="nav-scene glass-light mx-auto max-w-[90rem] rounded-full" backdrop="/brand/glass-light.webp">
+      <div {...GLASS} className="glass-bar flex items-center justify-between gap-3 rounded-full py-1.5 pl-4 pr-1.5 sm:pl-5">
+        <Link href="/" aria-label="CORE829 Bookings" className="flex min-h-11 items-center gap-3 pl-1 pr-2">
+          <Image src="/brand/symbol-black.svg" alt="CORE829" width={61} height={41} priority unoptimized className="h-7 w-auto" />
           <span className="hidden font-mono text-[10px] uppercase tracking-[0.12em] text-foreground-muted sm:inline">
             Bookings
           </span>
@@ -48,6 +51,7 @@ export function PublicHeader() {
           </Link>
         </div>
       </div>
+      </GlassScene>
     </header>
   );
 }

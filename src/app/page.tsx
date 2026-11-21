@@ -1,5 +1,7 @@
 "use client";
 
+import { GlassScene } from "@/components/ui/LiquidGlass";
+import { GLASS } from "@/lib/glass";
 import Image from "next/image";
 import Link from "next/link";
 import { useQuery, useConvexAuth } from "convex/react";
@@ -23,14 +25,14 @@ export default function Home() {
   const { t, locale } = useTranslation();
   const c = homeCopy(locale);
   const mail = `mailto:hello@core829.net?subject=${encodeURIComponent(c.emailSubject)}`;
-  const snippet = `<iframe\n  src="https://bookings.core829.net/embed/intro-call?accent=%23FF2743&font=DM%20Sans&lang=${locale}"\n  width="100%" height="720" style="border:0"\n  title="${c.book}"></iframe>`;
+  const snippet = `<iframe\n  src="https://bookings.core829.net/embed/intro-call?accent=%23FF2743&font=Inter&lang=${locale}"\n  width="100%" height="720" style="border:0"\n  title="${c.book}"></iframe>`;
 
   return (
     <>
       <PublicHeader />
       <main className="flex flex-1 flex-col">
         {/* Hero: area d'impatto in Rosso Racing, testi grandi in bianco (>= 24 px) */}
-        <section className="relative mt-3 overflow-hidden bg-accent text-background sm:mx-3 sm:rounded-[2rem]">
+        <GlassScene className="glass-red relative mt-3 overflow-hidden text-background sm:mx-3 sm:rounded-[2rem]" backdrop="/brand/glass-red.webp">
           <Image
             src="/brand/symbol-white.svg"
             alt=""
@@ -45,31 +47,31 @@ export default function Home() {
             <h1 className="mt-5 max-w-3xl text-[clamp(1.75rem,1rem+3.4vw,3.6rem)]">{c.heroTitle}</h1>
             <p className="mt-6 max-w-xl text-lg text-ink">{c.heroSubtitle}</p>
             <div className="mt-9 flex flex-wrap items-center gap-3">
-              <Link href="/#prenota" className={buttonClasses("primary", undefined, "dark")}>
+              <Link {...GLASS} href="/#prenota" className={buttonClasses("primary", undefined, "dark")}>
                 {c.heroBook}
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
-              <a href={mail} className={buttonClasses("secondary")}>
+              <a {...GLASS} href={mail} className={buttonClasses("secondary")}>
                 {c.heroEmail}
               </a>
             </div>
           </div>
-        </section>
+        </GlassScene>
 
         {/* Calendario reale */}
-        <section id="prenota" className="container-core829 scroll-mt-24 py-20 lg:py-24">
+        <GlassScene id="prenota" className="glass-light container-core829 scroll-mt-24 py-20 lg:py-24" backdrop="/brand/glass-light.webp">
           <p className="kicker">{c.tryKicker}</p>
           <h2 className="title-brand mt-3 max-w-3xl">{c.tryTitle}</h2>
           <p className="mt-4 max-w-2xl text-foreground-muted">{c.tryBody}</p>
           {primaryEventType && (
-            <div className="mt-8 rounded-3xl border border-border bg-surface p-4 sm:p-8">
+            <div {...GLASS} className="glass-card mt-8 rounded-3xl border border-border bg-surface p-4 sm:p-8">
               <BookingWidget slug={primaryEventType.slug} compact />
             </div>
           )}
-        </section>
+        </GlassScene>
 
         {/* Perché funziona */}
-        <section className="border-t border-border bg-surface">
+        <GlassScene className="glass-light border-t border-border" backdrop="/brand/glass-light.webp">
           <div className="container-core829 py-20 lg:py-24">
             <p className="kicker">{c.whyKicker}</p>
             <h2 className="title-brand mt-3 max-w-3xl">{c.whyTitle}</h2>
@@ -77,7 +79,7 @@ export default function Home() {
               {c.props.map((p, i) => {
                 const Icon = PROP_ICONS[i] ?? Calendar;
                 return (
-                  <article key={p.t} className="card-lift border border-border bg-background p-7">
+                  <article {...GLASS} key={p.t} className="card-lift border border-border bg-background p-7">
                     <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-ink text-on-ink">
                       <Icon className="h-5 w-5" aria-hidden />
                     </span>
@@ -88,7 +90,7 @@ export default function Home() {
               })}
             </div>
           </div>
-        </section>
+        </GlassScene>
 
         {/* Come funziona */}
         <section id="come-funziona" className="container-core829 scroll-mt-24 py-20 lg:py-24">
