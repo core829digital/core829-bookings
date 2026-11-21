@@ -1,28 +1,32 @@
-import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { DM_Sans, Michroma } from "next/font/google";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { ConvexClientProvider } from "@/components/ConvexClientProvider";
 import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
 import "./globals.css";
 
-// Stesso stack di Andromedia Web e di core829.net: "Saans" se installato sul dispositivo, altrimenti Inter
-// self-hosted da next/font (font variabile: normale, bold e ogni peso intermedio), piu' JetBrains Mono per i
-// dettagli tecnici. I token --font-* sono in globals.css.
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
+// Tipografia del brand CORE829 (Brand Guidelines 1.0): Michroma per titoli ed etichette, DM Sans per testi e
+// interfacce. Self-hosted da next/font; i token --font-* sono in globals.css.
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin", "latin-ext"],
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-  weight: ["400", "500"],
+const michroma = Michroma({
+  variable: "--font-michroma",
+  subsets: ["latin", "latin-ext"],
+  weight: "400",
+  display: "swap",
 });
 
 const title = "CORE829 Bookings — Prenota un appuntamento online";
 const description =
-  "Il sistema di prenotazione di CORE829: calendario in tempo reale, promemoria automatici e API per integrare il booking in qualsiasi sito.";
+  "Prenota online un appuntamento con CORE829: calendario in tempo reale, promemoria automatici, widget e API per il tuo sito.";
+
+export const viewport: Viewport = {
+  themeColor: "#f8f8f8",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://bookings.core829.net"),
@@ -46,7 +50,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <ConvexAuthNextjsServerProvider>
-      <html lang="it" className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}>
+      <html lang="it" className={`${dmSans.variable} ${michroma.variable} h-full antialiased`}>
         <body className="min-h-full flex flex-col">
           <ConvexClientProvider>
             <LocaleProvider>{children}</LocaleProvider>

@@ -121,7 +121,7 @@ function NotificationBell() {
         )}
       </button>
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-80 border border-border bg-background shadow-lg">
+        <div className="absolute right-0 top-full z-50 mt-2 w-80 rounded-2xl border border-border bg-background shadow-lg">
           <div className="flex items-center justify-between border-b border-border p-3">
             <span className="tech-label">Notifiche</span>
             {count > 0 && (

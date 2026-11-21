@@ -17,18 +17,19 @@ export default function SignInPage() {
     <main className="flex flex-1 items-center justify-center px-6 py-24">
       <div className="w-full max-w-sm">
         <Image
-          src="/core829branding/core829-logo.webp"
+          src="/brand/symbol-red.svg"
           alt="CORE829"
-          width={56}
-          height={56}
-          className="mx-auto mb-8"
+          width={84}
+          height={57}
+          unoptimized
+          className="mx-auto mb-8 h-14 w-auto"
         />
-        <div className="mb-6 flex border border-border">
+        <div className="mb-6 flex overflow-hidden rounded-full border border-border">
           <button
             type="button"
             className={`flex-1 py-3 text-sm font-medium transition-colors ${
               flow === "signIn"
-                ? "bg-foreground text-white"
+                ? "bg-foreground text-background"
                 : "text-foreground-muted hover:text-foreground"
             }`}
             onClick={() => setFlow("signIn")}
@@ -39,7 +40,7 @@ export default function SignInPage() {
             type="button"
             className={`flex-1 py-3 text-sm font-medium transition-colors ${
               flow === "signUp"
-                ? "bg-foreground text-white"
+                ? "bg-foreground text-background"
                 : "text-foreground-muted hover:text-foreground"
             }`}
             onClick={() => setFlow("signUp")}

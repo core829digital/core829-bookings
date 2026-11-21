@@ -1,173 +1,192 @@
 "use client";
 
 import Image from "next/image";
-import Script from "next/script";
+import Link from "next/link";
 import { useQuery, useConvexAuth } from "convex/react";
+import { Phone, Mail, ArrowRight, Calendar, Globe, Bell, Link2, Webhook, LayoutTemplate, Clock } from "lucide-react";
 import { api } from "../../convex/_generated/api";
-import { Button } from "@/components/ui/Button";
+import { buttonClasses } from "@/components/ui/Button";
 import { PublicHeader } from "@/components/PublicHeader";
 import { PublicFooter } from "@/components/PublicFooter";
 import { BookingWidget } from "@/components/BookingWidget";
 import { useTranslation } from "@/lib/i18n/LocaleProvider";
+import { homeCopy } from "@/lib/homeCopy";
 
-const VALUE_PROPS = [
-  {
-    title: "Zero doppie prenotazioni",
-    body: "Ogni prenotazione viene verificata in tempo reale contro il calendario del team: due persone non potranno mai occupare lo stesso slot, nemmeno cliccando nello stesso istante.",
-  },
-  {
-    title: "Fusi orari gestiti per te",
-    body: "Chi prenota vede sempre l'orario nel proprio fuso; il tuo team lavora nel suo. Il calcolo tiene conto anche dei cambi d'ora legale, senza slot fantasma o doppi orari.",
-  },
-  {
-    title: "Conferme ed email automatiche",
-    body: "Conferma via email immediata dopo ogni prenotazione, promemoria automatici a 24 ore e a 1 ora dall'appuntamento, link diretto per cancellare o riprogrammare senza bisogno di un account.",
-  },
-  {
-    title: "Widget per il tuo sito",
-    body: "Lo stesso calendario che vedi qui sotto si integra in qualsiasi sito con una riga di codice, oppure via API con notifiche webhook quando un visitatore prenota, cancella o riprogramma.",
-  },
-];
+const PROP_ICONS = [Calendar, Globe, Bell, LayoutTemplate];
+const SITE_ICONS = [LayoutTemplate, Webhook, Link2];
+const STEP_ICONS = [Clock, Mail, Bell, Calendar];
 
 export default function Home() {
   const { isAuthenticated, isLoading } = useConvexAuth();
   const activeEventTypes = useQuery(api.eventTypes.listActive);
   const primaryEventType = activeEventTypes?.[0];
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const c = homeCopy(locale);
+  const mail = `mailto:hello@core829.net?subject=${encodeURIComponent(c.emailSubject)}`;
+  const snippet = `<iframe\n  src="https://bookings.core829.net/embed/intro-call?accent=%23FF2743&font=DM%20Sans&lang=${locale}"\n  width="100%" height="720" style="border:0"\n  title="${c.book}"></iframe>`;
 
   return (
     <>
       <PublicHeader />
       <main className="flex flex-1 flex-col">
-        <section className="relative flex min-h-[32rem] flex-col overflow-hidden">
+        {/* Hero: area d'impatto in Rosso Racing, testi grandi in bianco (>= 24 px) */}
+        <section className="relative mt-3 overflow-hidden bg-accent text-background sm:mx-3 sm:rounded-[2rem]">
           <Image
-            src="/core829branding/core829-banner.webp"
+            src="/brand/symbol-white.svg"
             alt=""
-            fill
-            priority
-            className="object-cover"
+            width={1022}
+            height={692}
+            unoptimized
+            aria-hidden
+            className="pointer-events-none absolute -right-24 top-1/2 hidden w-[52rem] max-w-none -translate-y-1/2 opacity-[0.16] lg:block"
           />
-          <div className="relative z-10 flex flex-1 flex-col justify-center px-6 py-20 sm:px-12 lg:px-20">
-            <p className="text-xs uppercase tracking-[0.25em] text-white/70">
-              {t("home_kicker")}
-            </p>
-            <h1 className="mt-4 max-w-xl text-4xl font-semibold text-white sm:text-5xl">
-              {t("home_title")}
-            </h1>
-            <p className="mt-4 max-w-md text-white/80">{t("home_subtitle")}</p>
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              {primaryEventType && (
-                <a href="#prenota" className="inline-block w-fit">
-                  <Button
-                    variant="secondary"
-                    className="border-white bg-white text-foreground hover:bg-transparent hover:text-white"
-                  >
-                    {t("home_bookNow")}
-                  </Button>
-                </a>
-              )}
-              {!isLoading && (
-                <a href={isAuthenticated ? "/calendar" : "/signin"} className="inline-block w-fit">
-                  <Button
-                    variant="secondary"
-                    className="border-white text-white hover:bg-white hover:text-foreground"
-                  >
-                    {isAuthenticated ? t("home_dashboard") : t("home_teamLogin")}
-                  </Button>
-                </a>
-              )}
+          <div className="container-core829 relative flex min-h-[34rem] flex-col justify-center py-20 lg:min-h-[40rem]">
+            <p className="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink">{c.heroKicker}</p>
+            <h1 className="mt-5 max-w-3xl text-[clamp(1.75rem,1rem+3.4vw,3.6rem)]">{c.heroTitle}</h1>
+            <p className="mt-6 max-w-xl text-lg text-ink">{c.heroSubtitle}</p>
+            <div className="mt-9 flex flex-wrap items-center gap-3">
+              <Link href="/#prenota" className={buttonClasses("primary", undefined, "dark")}>
+                {c.heroBook}
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </Link>
+              <a href={mail} className={buttonClasses("secondary")}>
+                {c.heroEmail}
+              </a>
             </div>
           </div>
         </section>
 
-        {primaryEventType && (
-          <section id="prenota" className="mx-auto w-full max-w-container px-6 py-20 sm:px-12 lg:px-20">
-            <p className="kicker">Provalo subito</p>
-            <h2 className="mt-2 max-w-xl text-2xl font-semibold text-foreground sm:text-3xl">
-              Questo è il calendario vero, in tempo reale
-            </h2>
-            <p className="mt-3 max-w-2xl text-foreground-muted">
-              Nessuna demo finta: scegli un orario qui sotto ed è la stessa
-              identica esperienza che avrebbe un cliente sul tuo sito.
-            </p>
-            <div className="mt-8 border border-border bg-surface p-4 sm:p-8">
+        {/* Calendario reale */}
+        <section id="prenota" className="container-core829 scroll-mt-24 py-20 lg:py-24">
+          <p className="kicker">{c.tryKicker}</p>
+          <h2 className="title-brand mt-3 max-w-3xl">{c.tryTitle}</h2>
+          <p className="mt-4 max-w-2xl text-foreground-muted">{c.tryBody}</p>
+          {primaryEventType && (
+            <div className="mt-8 rounded-3xl border border-border bg-surface p-4 sm:p-8">
               <BookingWidget slug={primaryEventType.slug} compact />
             </div>
-          </section>
-        )}
+          )}
+        </section>
 
-        <section className="border-t border-border px-6 py-20 sm:px-12 lg:px-20">
-          <div className="mx-auto w-full max-w-container">
-            <p className="kicker">Perché usarlo</p>
-            <h2 className="mt-2 max-w-xl text-2xl font-semibold text-foreground sm:text-3xl">
-              Costruito per non far perdere né tempo né clienti
-            </h2>
-            <div className="mt-10 grid gap-8 sm:grid-cols-2">
-              {VALUE_PROPS.map((item) => (
-                <div key={item.title} className="border-l-2 border-accent pl-5">
-                  <h3 className="text-lg font-medium text-foreground">{item.title}</h3>
-                  <p className="mt-2 text-sm text-foreground-muted">{item.body}</p>
-                </div>
-              ))}
+        {/* Perché funziona */}
+        <section className="border-t border-border bg-surface">
+          <div className="container-core829 py-20 lg:py-24">
+            <p className="kicker">{c.whyKicker}</p>
+            <h2 className="title-brand mt-3 max-w-3xl">{c.whyTitle}</h2>
+            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {c.props.map((p, i) => {
+                const Icon = PROP_ICONS[i] ?? Calendar;
+                return (
+                  <article key={p.t} className="card-lift border border-border bg-background p-7">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-ink text-on-ink">
+                      <Icon className="h-5 w-5" aria-hidden />
+                    </span>
+                    <h3 className="mt-6 text-lg">{p.t}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-foreground-muted">{p.d}</p>
+                  </article>
+                );
+              })}
             </div>
           </div>
         </section>
 
-        <section className="border-t border-border bg-surface">
-          <div className="mx-auto w-full max-w-container px-6 py-20 sm:px-12 lg:px-20">
-            <p className="kicker">Il sistema CORE829</p>
-            <h2 className="mt-2 max-w-2xl text-2xl font-semibold text-foreground sm:text-3xl">
-              Un unico sistema di prenotazione, per il nostro team e per i
-              clienti CORE829
-            </h2>
-            <p className="mt-4 max-w-2xl text-foreground-muted">
-              Questa piattaforma nasce prima di tutto per gestire gli
-              appuntamenti interni di CORE829, ma è pensata per diventare il
-              motore di prenotazione anche dei siti che costruiamo per i
-              nostri clienti: ogni azienda può avere la propria pagina di
-              prenotazione ospitata qui, integrare il widget nel proprio sito
-              con una riga di codice, oppure collegarsi via API — con
-              un&apos;offerta ad abbonamento mensile dedicata.
-            </p>
-            <a href="mailto:hello@core829.net" className="mt-8 inline-block w-fit">
-              <Button>Richiedi il tuo sistema di prenotazione</Button>
-            </a>
+        {/* Come funziona */}
+        <section id="come-funziona" className="container-core829 scroll-mt-24 py-20 lg:py-24">
+          <p className="kicker">{c.howKicker}</p>
+          <h2 className="title-brand mt-3 max-w-3xl">{c.howTitle}</h2>
+          <ol className="relative mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <span aria-hidden className="absolute left-0 right-0 top-6 hidden h-px bg-border lg:block" />
+            {c.steps.map((s, i) => {
+              const Icon = STEP_ICONS[i] ?? Calendar;
+              return (
+                <li key={s.t} className="relative">
+                  <span className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-accent text-ink">
+                    <Icon className="h-5 w-5" aria-hidden />
+                  </span>
+                  <p className="tech-label mt-5">0{i + 1}</p>
+                  <h3 className="mt-1 text-lg">{s.t}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-foreground-muted">{s.d}</p>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+
+        {/* Per il tuo sito */}
+        <section id="sito" className="scroll-mt-24 border-t border-border bg-surface">
+          <div className="container-core829 grid grid-cols-[minmax(0,1fr)] gap-12 py-20 lg:grid-cols-2 lg:gap-16 lg:py-24">
+            <div>
+              <p className="kicker">{c.siteKicker}</p>
+              <h2 className="title-brand mt-3">{c.siteTitle}</h2>
+              <p className="mt-4 max-w-xl text-foreground-muted">{c.siteBody}</p>
+              <ul className="mt-8 space-y-4">
+                {c.siteCards.map((s, i) => {
+                  const Icon = SITE_ICONS[i] ?? Link2;
+                  return (
+                    <li key={s.t} className="flex items-start gap-4">
+                      <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-ink text-on-ink">
+                        <Icon className="h-4 w-4" aria-hidden />
+                      </span>
+                      <span>
+                        <span className="block font-semibold">{s.t}</span>
+                        <span className="block text-sm text-foreground-muted">{s.d}</span>
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+            <div className="self-center">
+              <p className="tech-label mb-3">{c.snippetLabel}</p>
+              <pre tabIndex={0} aria-label={c.snippetLabel} className="overflow-x-auto rounded-3xl bg-ink p-6 text-[0.8rem] leading-relaxed text-on-ink">
+                <code>{snippet}</code>
+              </pre>
+            </div>
           </div>
         </section>
 
-        <section className="mx-auto w-full max-w-container px-6 py-20 sm:px-12 lg:px-20">
-          <p className="kicker">Recensioni</p>
-          <h2 className="mt-2 text-2xl font-semibold text-foreground sm:text-3xl">
-            Cosa dicono di CORE829
-          </h2>
-          <div className="mt-8 max-w-xl">
-            <div
-              className="trustpilot-widget"
-              data-locale="en-US"
-              data-template-id="56278e9abfbbba0bdcd568bc"
-              data-businessunit-id="69980f039111479251cb48b2"
-              data-style-height="52px"
-              data-style-width="100%"
-              data-token="70067085-465e-4ecc-954d-c083004935df"
-            >
+        {/* Contatti: scrivere o chiamare (nessun prezzo pubblico) */}
+        <section id="contatti" className="scroll-mt-24 bg-ink text-on-ink">
+          <div className="container-core829 py-20 text-center lg:py-28">
+            <p className="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-accent">{c.ctaKicker}</p>
+            <h2 className="title-brand mx-auto mt-4 max-w-3xl !text-on-ink">{c.ctaTitle}</h2>
+            <p className="mx-auto mt-5 max-w-xl text-on-ink-muted">{c.ctaBody}</p>
+            <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+              <a href={mail} className={buttonClasses("primary")}>
+                <Mail className="h-4 w-4" aria-hidden />
+                {c.ctaEmail}
+              </a>
+              <a href="tel:+40766668482" className={buttonClasses("secondary", undefined, "dark")}>
+                <Phone className="h-4 w-4" aria-hidden />
+                {c.ctaCall} +40 766 668 482
+              </a>
+              <a href="tel:+393759468881" className={buttonClasses("secondary", undefined, "dark")}>
+                <Phone className="h-4 w-4" aria-hidden />
+                {c.ctaCall} +39 375 946 8881
+              </a>
+            </div>
+            <p className="mt-10 text-sm">
               <a
                 href="https://www.trustpilot.com/review/core829.net"
                 target="_blank"
                 rel="noopener noreferrer"
+                className="text-on-ink-muted underline underline-offset-4 transition-colors hover:text-on-ink"
               >
-                Trustpilot
+                {c.reviews}
               </a>
-            </div>
+            </p>
+            {!isLoading && (
+              <p className="mt-3 text-sm">
+                <Link href={isAuthenticated ? "/calendar" : "/signin"} className="text-on-ink-muted transition-colors hover:text-on-ink">
+                  {isAuthenticated ? t("home_dashboard") : t("home_teamLogin")}
+                </Link>
+              </p>
+            )}
           </div>
         </section>
       </main>
 
       <PublicFooter />
-
-      <Script
-        src="//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js"
-        strategy="afterInteractive"
-      />
     </>
   );
 }

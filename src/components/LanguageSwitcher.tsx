@@ -17,7 +17,7 @@ export function LanguageSwitcher() {
       value={locale}
       onChange={(e) => setLocale(e.target.value as Locale)}
       aria-label="Lingua"
-      className="border border-border bg-background px-2 py-1.5 text-xs text-foreground-muted hover:text-foreground"
+      className="min-h-11 rounded-full border border-border bg-background px-3 text-xs text-foreground-muted transition-colors hover:text-foreground"
     >
       {LOCALES.map((l) => (
         <option key={l} value={l}>

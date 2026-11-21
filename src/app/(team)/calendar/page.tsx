@@ -213,7 +213,7 @@ function ModalShell({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 px-4">
-      <div className="w-full max-w-md border border-border bg-background p-6">
+      <div className="w-full max-w-md rounded-2xl border border-border bg-background p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground">{title}</h2>
           <button onClick={onClose} className="text-foreground-muted hover:text-foreground">

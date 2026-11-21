@@ -3,30 +3,27 @@ import type { ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
 type Variant = "primary" | "secondary" | "ghost";
+type Tone = "light" | "dark";
 
-const base =
-  "inline-flex items-center justify-center gap-2 text-sm font-medium transition-colors duration-300 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-60 min-h-11 px-7";
-
-const variants: Record<Variant, string> = {
-  primary: "bg-foreground text-white hover:bg-accent",
-  secondary:
-    "border border-foreground text-foreground hover:bg-foreground hover:text-white",
-  ghost: "text-foreground hover:text-accent px-0",
-};
+/** Classi del pulsante a capsula (core829.net): riusabili su <a>, <Link> e <button>. */
+export function buttonClasses(variant: Variant = "primary", className?: string, tone: Tone = "light") {
+  return cn("btn", `btn-${variant}`, tone === "dark" && "btn-on-dark", className);
+}
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
+  tone?: Tone;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { className, variant = "primary", type = "button", ...props },
+  { className, variant = "primary", tone = "light", type = "button", ...props },
   ref
 ) {
   return (
     <button
       ref={ref}
       type={type}
-      className={cn(base, variants[variant], className)}
+      className={buttonClasses(variant, className, tone)}
       {...props}
     />
   );

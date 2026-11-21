@@ -45,7 +45,7 @@ export default function OrganizationsPage() {
 
       {showNewOrg && (
         <form
-          className="mt-6 flex gap-3 border border-border bg-surface p-6"
+          className="mt-6 flex gap-3 rounded-2xl border border-border bg-surface p-6"
           onSubmit={(e) => {
             e.preventDefault();
             setOrgError(null);
@@ -150,7 +150,7 @@ function OrgDetail({
             </p>
           ) : (
             bookings.map((b) => (
-              <div key={b._id} className="border border-border p-3">
+              <div key={b._id} className="rounded-2xl border border-border p-3">
                 <p className="text-foreground">
                   {DateTime.fromMillis(b.startTime, { zone: b.inviteeTimezone }).toFormat(
                     "d MMM yyyy, HH:mm"
@@ -189,7 +189,7 @@ function OrgDetail({
 
         {canManage && !revealedKey && (
           <form
-            className="mt-4 grid gap-3 border border-border bg-surface p-4 sm:grid-cols-2"
+            className="mt-4 grid gap-3 rounded-2xl border border-border bg-surface p-4 sm:grid-cols-2"
             onSubmit={(e) => {
               e.preventDefault();
               issueKey({
@@ -244,7 +244,7 @@ function OrgDetail({
           {(keys ?? []).map((key) => (
             <div
               key={key._id}
-              className="flex items-center justify-between border border-border p-3"
+              className="flex items-center justify-between rounded-2xl border border-border p-3"
             >
               <div>
                 <p className="text-foreground">
@@ -292,7 +292,7 @@ function OrgDetail({
 
         {canManage && !revealedSecret && (
           <form
-            className="mt-4 grid gap-3 border border-border bg-surface p-4"
+            className="mt-4 grid gap-3 rounded-2xl border border-border bg-surface p-4"
             onSubmit={(e) => {
               e.preventDefault();
               createEndpoint({
@@ -336,7 +336,7 @@ function OrgDetail({
 
         <div className="mt-4 space-y-2">
           {(endpoints ?? []).map((endpoint) => (
-            <div key={endpoint._id} className="border border-border p-3">
+            <div key={endpoint._id} className="rounded-2xl border border-border p-3">
               <p className="break-all text-foreground">{endpoint.url}</p>
               <p className="text-sm text-foreground-muted">
                 {endpoint.events.join(", ")} · {endpoint.status}
@@ -355,7 +355,7 @@ function OrgDetail({
             (deliveries ?? []).map((d) => (
               <div
                 key={d._id}
-                className="flex items-center justify-between border border-border p-3"
+                className="flex items-center justify-between rounded-2xl border border-border p-3"
               >
                 <div>
                   <p className="text-foreground">

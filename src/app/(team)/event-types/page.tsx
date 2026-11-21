@@ -34,7 +34,7 @@ export default function EventTypesPage() {
       </div>
 
       {showForm && (
-        <div className="mt-6 border border-border bg-surface p-6">
+        <div className="mt-6 rounded-2xl border border-border bg-surface p-6">
           <NewEventTypeForm onDone={() => setShowForm(false)} />
         </div>
       )}
@@ -48,7 +48,7 @@ export default function EventTypesPage() {
           eventTypes.map((et) => (
             <div
               key={et._id}
-              className="flex items-center justify-between border border-border p-4"
+              className="flex items-center justify-between rounded-2xl border border-border p-4"
             >
               <div>
                 <p className="text-foreground">
