@@ -148,7 +148,9 @@ export default function Home() {
         {/* Contatti: scrivere o chiamare (nessun prezzo pubblico) */}
         <section id="contatti" className="scroll-mt-24 bg-ink text-on-ink">
           <div className="container-core829 py-20 text-center lg:py-28">
-            <p className="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-accent">{c.ctaKicker}</p>
+            <p className="font-mono text-[0.6875rem] uppercase tracking-[0.18em]" style={{ color: "var(--color-accent)" }}>
+              {c.ctaKicker}
+            </p>
             <h2 className="title-brand mx-auto mt-4 max-w-3xl !text-on-ink">{c.ctaTitle}</h2>
             <p className="mx-auto mt-5 max-w-xl text-on-ink-muted">{c.ctaBody}</p>
             <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
