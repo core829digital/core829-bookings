@@ -8,7 +8,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from "@/lib/i18n/LocaleProvider";
 import { homeCopy } from "@/lib/homeCopy";
 import { GlassScene } from "@/components/ui/LiquidGlass";
-import { GLASS } from "@/lib/glass";
+import {  GLASS  } from "@/lib/glass";
 
 /**
  * Header pubblico: capsula Bianco Polare con il simbolo in Rosso Racing (Brand Guidelines, applicazioni),
@@ -23,7 +23,7 @@ export function PublicHeader() {
 
   return (
     <header className="sticky top-0 z-40 px-3 pt-3 sm:px-5">
-      <GlassScene className="nav-scene glass-light mx-auto max-w-[90rem] rounded-full" backdrop="/brand/glass-light.webp">
+      <GlassScene className="nav-scene glass-light mx-auto max-w-[90rem] rounded-full" backdrop="/brand/glass-flat-light.png">
       <div {...GLASS} className="glass-bar flex items-center justify-between gap-3 rounded-full py-1.5 pl-4 pr-1.5 sm:pl-5">
         <Link href="/" aria-label="CORE829 Bookings" className="flex min-h-11 items-center gap-3 pl-1 pr-2">
           <Image src="/brand/symbol-black.svg" alt="CORE829" width={61} height={41} priority unoptimized className="h-7 w-auto" />
@@ -39,14 +39,14 @@ export function PublicHeader() {
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
           {!isLoading && (
-            <Link
+            <Link {...GLASS}
               href={isAuthenticated ? "/calendar" : "/signin"}
               className={buttonClasses("secondary", "hidden !px-4 text-xs sm:inline-flex")}
             >
               {isAuthenticated ? t("nav_dashboard") : t("nav_signin")}
             </Link>
           )}
-          <Link href="/#prenota" className={buttonClasses("primary", "!px-4 text-xs sm:!px-5")}>
+          <Link {...GLASS} href="/#prenota" className={buttonClasses("primary", "!px-4 text-xs sm:!px-5")}>
             {c.book}
           </Link>
         </div>

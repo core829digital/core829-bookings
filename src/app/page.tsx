@@ -1,7 +1,7 @@
 "use client";
 
 import { GlassScene } from "@/components/ui/LiquidGlass";
-import { GLASS } from "@/lib/glass";
+import {  GLASS  } from "@/lib/glass";
 import Image from "next/image";
 import Link from "next/link";
 import { useQuery, useConvexAuth } from "convex/react";
@@ -156,15 +156,15 @@ export default function Home() {
             <h2 className="title-brand mx-auto mt-4 max-w-3xl !text-on-ink">{c.ctaTitle}</h2>
             <p className="mx-auto mt-5 max-w-xl text-on-ink-muted">{c.ctaBody}</p>
             <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-              <a href={mail} className={buttonClasses("primary")}>
+              <a {...GLASS} href={mail} className={buttonClasses("primary")}>
                 <Mail className="h-4 w-4" aria-hidden />
                 {c.ctaEmail}
               </a>
-              <a href="tel:+40766668482" className={buttonClasses("secondary", undefined, "dark")}>
+              <a {...GLASS} href="tel:+40766668482" className={buttonClasses("secondary", undefined, "dark")}>
                 <Phone className="h-4 w-4" aria-hidden />
                 {c.ctaCall} +40 766 668 482
               </a>
-              <a href="tel:+393759468881" className={buttonClasses("secondary", undefined, "dark")}>
+              <a {...GLASS} href="tel:+393759468881" className={buttonClasses("secondary", undefined, "dark")}>
                 <Phone className="h-4 w-4" aria-hidden />
                 {c.ctaCall} +39 375 946 8881
               </a>
