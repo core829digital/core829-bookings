@@ -289,7 +289,7 @@ liquid-glass.glass-light [glass].glass-card {
 liquid-glass [glass].btn-primary {
   --glass-tint: rgba(255, 39, 67, 0.9);
   --glass-frost: 0.1;
-  --glass-shadow: 0.3;
+  --glass-shadow: 0.08;
 }
 liquid-glass.glass-red [glass].btn-primary {
   --glass-tint: rgba(248, 248, 248, 0.92);
@@ -297,5 +297,5 @@ liquid-glass.glass-red [glass].btn-primary {
 liquid-glass [glass].btn-secondary {
   --glass-tint: rgba(255, 255, 255, 0.6);
   --glass-frost: 0.25;
-  --glass-shadow: 0.3;
+  --glass-shadow: 0.08;
 }
