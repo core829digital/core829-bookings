@@ -105,7 +105,7 @@ export default function AvailabilityPage() {
         </div>
       </div>
 
-      <section className="mt-8 border border-border bg-surface p-6">
+      <section className="mt-8 rounded-2xl border border-border bg-surface p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground">Orario settimanale</h2>
           {saved && <span className="tech-label text-accent">Salvato</span>}
@@ -160,7 +160,7 @@ export default function AvailabilityPage() {
         </Button>
       </section>
 
-      <section className="mt-10 border border-border bg-surface p-6">
+      <section className="mt-10 rounded-2xl border border-border bg-surface p-6">
         <h2 className="text-lg font-semibold text-foreground">Eccezioni e blocchi</h2>
         <form
           className="mt-4 grid gap-4 sm:grid-cols-2"
@@ -228,7 +228,7 @@ export default function AvailabilityPage() {
             sortedExceptions.map((exc) => (
               <div
                 key={exc.date}
-                className="flex items-center justify-between border border-border bg-background px-4 py-3"
+                className="flex items-center justify-between rounded-2xl border border-border bg-background px-4 py-3"
               >
                 <div>
                   <p className="text-foreground">{exc.date}</p>

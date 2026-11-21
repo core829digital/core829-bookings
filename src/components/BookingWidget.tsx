@@ -177,7 +177,7 @@ export function BookingWidget({
               {daysInWindow.map((day) => {
                 const daySlots = slotsByDay.get(day) ?? [];
                 return (
-                  <div key={day} className="border border-border bg-surface p-3">
+                  <div key={day} className="rounded-2xl border border-border bg-surface p-3">
                     <p className="tech-label mb-2">
                       {DateTime.fromISO(day).toFormat("ccc d MMM")}
                     </p>
@@ -188,7 +188,7 @@ export function BookingWidget({
                         {daySlots.map((slot) => (
                           <button
                             key={slot.startTime}
-                            className="border border-border px-2.5 py-1 text-xs text-foreground hover:border-accent hover:text-accent"
+                            className="rounded-full border border-border bg-background px-3 py-1.5 text-xs text-foreground transition-colors hover:border-ink hover:bg-ink hover:text-on-ink"
                             onClick={() => setSelectedSlot(slot)}
                           >
                             {DateTime.fromMillis(slot.startTime, {
@@ -219,7 +219,7 @@ function WidgetBrandBadge() {
       rel="noopener noreferrer"
       className="mt-8 inline-flex items-center gap-2 text-xs text-foreground-muted hover:text-foreground"
     >
-      <Image src="/core829branding/core829-logo.webp" alt="" width={16} height={16} />
+      <Image src="/brand/symbol-red.svg" alt="" width={22} height={15} unoptimized />
       {t("widget_poweredBy")}
     </a>
   );

@@ -5,7 +5,7 @@
 //
 // Coverage: every key used by the public booking flow (widget, header,
 // footer, hosted org page, manage-booking page) is translated in all 24
-// locales. Longer homepage/pricing marketing copy is translated in the
+// locales. Longer homepage marketing copy is translated in the
 // highest-traffic locales only (it, en, de, fr, es, pt, ro, ru, zh, ja) —
 // see MARKETING_LOCALES below — and falls back to English elsewhere,
 // which is a normal, honest scoping choice rather than thin machine
@@ -22,13 +22,6 @@ type Dict = Partial<Record<Locale, string>>;
 
 export const TRANSLATIONS: Record<string, Dict> = {
   // ---- nav / header ----
-  nav_pricing: {
-    it: "Prezzi", en: "Pricing", de: "Preise", fr: "Tarifs", es: "Precios",
-    pt: "Preços", ro: "Prețuri", ru: "Цены", zh: "价格", ja: "料金",
-    bg: "Цени", cs: "Ceník", da: "Priser", el: "Τιμές", fi: "Hinnoittelu",
-    hu: "Árak", ko: "요금제", nl: "Prijzen", no: "Priser", pl: "Cennik",
-    sk: "Cenník", sv: "Priser", tr: "Fiyatlandırma", uk: "Ціни",
-  },
   nav_dashboard: {
     it: "Dashboard", en: "Dashboard", de: "Dashboard", fr: "Tableau de bord",
     es: "Panel", pt: "Painel", ro: "Panou", ru: "Панель", zh: "控制台",
@@ -506,42 +499,6 @@ export const TRANSLATIONS: Record<string, Dict> = {
   },
 
   // ---- homepage (core keys only — see MARKETING_ONLY below for long copy) ----
-  home_kicker: {
-    it: "CORE829 · Agenzia Digitale", en: "CORE829 · Digital Agency",
-    de: "CORE829 · Digitalagentur", fr: "CORE829 · Agence digitale",
-    es: "CORE829 · Agencia digital", pt: "CORE829 · Agência digital",
-    ro: "CORE829 · Agenție digitală", ru: "CORE829 · Цифровое агентство",
-    zh: "CORE829 · 数字代理公司", ja: "CORE829・デジタルエージェンシー",
-  },
-  home_title: {
-    it: "Prenota il tuo appuntamento in meno di un minuto",
-    en: "Book your appointment in under a minute",
-    de: "Buche deinen Termin in weniger als einer Minute",
-    fr: "Réservez votre rendez-vous en moins d'une minute",
-    es: "Reserva tu cita en menos de un minuto",
-    pt: "Reserve o seu horário em menos de um minuto",
-    ro: "Programează-te în mai puțin de un minut",
-    ru: "Забронируйте встречу меньше чем за минуту",
-    zh: "不到一分钟即可预约", ja: "1分もかからずに予約完了",
-  },
-  home_subtitle: {
-    it: "Il sistema di prenotazione costruito da CORE829: calendario in tempo reale, promemoria automatici e un widget pronto per essere integrato in qualsiasi sito.",
-    en: "The booking system built by CORE829: real-time calendar, automatic reminders, and a widget ready to embed on any site.",
-    de: "Das von CORE829 entwickelte Buchungssystem: Echtzeit-Kalender, automatische Erinnerungen und ein Widget, das sich in jede Website einbetten lässt.",
-    fr: "Le système de réservation conçu par CORE829 : calendrier en temps réel, rappels automatiques et un widget prêt à intégrer sur n'importe quel site.",
-    es: "El sistema de reservas creado por CORE829: calendario en tiempo real, recordatorios automáticos y un widget listo para integrar en cualquier sitio.",
-    pt: "O sistema de reservas construído pela CORE829: calendário em tempo real, lembretes automáticos e um widget pronto para ser incorporado em qualquer site.",
-    ro: "Sistemul de programări creat de CORE829: calendar în timp real, remindere automate și un widget gata de integrat pe orice site.",
-    ru: "Система бронирования от CORE829: календарь в реальном времени, автоматические напоминания и виджет для встраивания на любой сайт.",
-    zh: "由 CORE829 打造的预约系统：实时日历、自动提醒，以及可嵌入任何网站的小组件。",
-    ja: "CORE829が構築した予約システム：リアルタイムカレンダー、自動リマインダー、どんなサイトにも埋め込める予約ウィジェット。",
-  },
-  home_bookNow: {
-    it: "Prenota ora", en: "Book now", de: "Jetzt buchen",
-    fr: "Réserver maintenant", es: "Reservar ahora", pt: "Reservar agora",
-    ro: "Programează acum", ru: "Забронировать", zh: "立即预约",
-    ja: "今すぐ予約",
-  },
   home_teamLogin: {
     it: "Accedi al pannello team", en: "Team sign in",
     de: "Team-Anmeldung", fr: "Connexion équipe", es: "Acceso del equipo",

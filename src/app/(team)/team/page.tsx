@@ -50,7 +50,7 @@ export default function TeamPage() {
           team.map((member) => (
             <div
               key={member._id}
-              className="flex items-center justify-between border border-border p-4"
+              className="flex items-center justify-between rounded-2xl border border-border p-4"
             >
               <div>
                 <p className="text-foreground">

@@ -1,42 +1,26 @@
 @import "tailwindcss";
 
 /* ============================================================
-   CORE829 — DESIGN TOKEN (mirrors core829-new-final, vincolante)
+   CORE829 — Brand Guidelines 1.0 (novembre 2026)
+   Rosso Racing #FF2743 · Bianco Polare #F8F8F8 · Nero Pista #141416
+   Tinta piatta (nessuna sfumatura). Michroma (H1, titoli, etichette) + DM Sans (testi, interfacce).
+   Stessi token e componenti di core829.net.
    ============================================================ */
 :root {
-  --color-background: #ffffff;
-  --color-foreground: #111217; /* Obsidian Black */
-  --color-foreground-muted: #4a5160;
-  --color-accent: #e52139; /* Racing Red, variante AA per pulsanti (4,56:1 con testo bianco) */
-  --color-accent-text: #d92037; /* rosso per testo piccolo: >= 4,5:1 anche su Ice Grey chiaro */
-  --color-racing: #ef233c; /* Racing Red puro: grafica e superfici grandi */
-  --color-accent-hover: #b8132a;
-  --color-border: #dfe5eb; /* Ice Grey */
-  --color-surface: #f2f5f8;
-}
-
-/* Saans (Displaay) e' un font commerciale: se e' installato sul dispositivo viene usato direttamente,
-   altrimenti si usa Inter (self-hosted da next/font). Configurazione identica ad Andromedia Web. */
-@font-face {
-  font-family: "Saans";
-  src: local("Saans"), local("Saans Regular"), local("Saans-Regular");
-  font-weight: 300 800;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Saans Display";
-  src: local("Saans Display"), local("SaansDisplay-Regular"), local("Saans Display Regular"), local("Saans");
-  font-weight: 300 800;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Saans Text";
-  src: local("Saans Text"), local("SaansText-Regular"), local("Saans Text Regular"), local("Saans");
-  font-weight: 300 800;
-  font-style: normal;
-  font-display: swap;
+  --color-background: #f8f8f8; /* Bianco Polare */
+  --color-foreground: #141416; /* Nero Pista (17,3:1 su Bianco Polare) */
+  --color-foreground-muted: #58585d; /* Nero Pista attenuato (6,7:1) */
+  --color-accent: #ff2743; /* Rosso Racing: superfici, simbolo, aree d'impatto (3,5:1 su Bianco Polare: non per testo piccolo) */
+  --color-accent-text: #d31b37; /* Rosso Racing scurito per testo piccolo (>= 4,5:1 su superfici chiare) */
+  --color-racing: #ff2743;
+  --color-accent-hover: #d31b37;
+  --color-border: #e2e2e4;
+  --color-surface: #efeff0;
+  --color-ink: #141416;
+  --color-ink-soft: #1d1d20;
+  --color-on-ink: #f8f8f8;
+  --color-on-ink-muted: #a8a8ad;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @theme inline {
@@ -47,14 +31,18 @@
   --color-accent-hover: var(--color-accent-hover);
   --color-border: var(--color-border);
   --color-surface: var(--color-surface);
-  --font-sans: "Saans Text", "Saans", var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Saans Display", "Saans", var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-on-ink: var(--color-on-ink);
+  --color-on-ink-muted: var(--color-on-ink-muted);
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-brand: var(--font-michroma), "Arial Black", ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-michroma), ui-sans-serif, system-ui, sans-serif;
   --container-container: 76rem;
 }
 
 @layer base {
-  /* Resa del testo identica a core829.net: stessi pesi e contorni su ogni schermo. */
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -68,52 +56,163 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    /* Le utility di Tailwind (theme inline) risolvono lo stack dei font; var(--font-sans) qui non e' definita su :root. */
     @apply font-sans;
-    line-height: 1.5;
+    line-height: 1.55;
   }
 
-  h1,
+  /* Gerarchia del brand: H1 Michroma maiuscolo; H2 e sotto DM Sans SemiBold. */
+  h1 {
+    @apply font-brand;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
   h2,
   h3,
   h4 {
-    @apply font-display;
-    font-weight: 560; /* come Andromedia Web */
-    letter-spacing: -0.03em;
+    @apply font-sans;
+    font-weight: 600;
+    letter-spacing: -0.015em;
     text-wrap: balance;
   }
 
   ::selection {
     background-color: var(--color-accent);
-    color: #ffffff;
+    color: var(--color-ink);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-accent-text);
     outline-offset: 3px;
   }
 }
 
 @layer components {
-  .input-core829 {
-    @apply w-full rounded-none border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-foreground-muted placeholder:opacity-60 transition-colors focus:border-foreground focus:outline-none;
+  .container-core829 {
+    width: 100%;
+    max-width: 90rem;
+    margin-inline: auto;
+    padding-inline: clamp(1.25rem, 0.5rem + 3.6vw, 5rem);
   }
 
+  /* Titolo di sezione: Michroma maiuscolo */
+  .title-brand {
+    @apply font-brand;
+    font-size: clamp(1.3rem, 0.9rem + 1.7vw, 2.4rem);
+    font-weight: 400;
+    text-transform: uppercase;
+    line-height: 1.18;
+  }
+
+  .input-core829 {
+    @apply w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-foreground-muted placeholder:opacity-60 transition-colors focus:border-foreground focus:outline-none;
+  }
+
+  /* Etichetta: Michroma maiuscolo, spaziatura +12% */
   .kicker {
-    @apply font-mono text-xs uppercase tracking-[0.25em];
+    @apply font-mono text-[0.6875rem] uppercase tracking-[0.18em];
     color: var(--color-accent-text);
   }
 
   .tech-label {
-    @apply font-mono text-xs uppercase tracking-[0.2em] text-foreground-muted;
+    @apply font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-foreground-muted;
   }
 
   .link-ghost {
     @apply relative inline-flex items-center gap-2 text-foreground no-underline hover:text-accent;
   }
+
+  /* Pulsante a capsula, tinta piatta, area minima 44px. Rosso con testo Nero Pista (4,9:1, AA). */
+  .btn {
+    @apply inline-flex min-h-11 max-w-full items-center justify-center gap-2 whitespace-nowrap rounded-full border px-6 text-sm font-medium transition-colors duration-300 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-60;
+    background-color: var(--btn-bg);
+    border-color: var(--btn-border);
+    color: var(--btn-fg);
+  }
+  .btn:hover {
+    background-color: var(--btn-bg-hover);
+    color: var(--btn-fg-hover, var(--btn-fg));
+  }
+  .btn:active {
+    background-color: var(--btn-bg-active);
+    color: var(--btn-fg-hover, var(--btn-fg));
+  }
+  .btn-primary {
+    --btn-bg: var(--color-accent);
+    --btn-bg-hover: var(--color-ink);
+    --btn-bg-active: #2c2c30;
+    --btn-fg: var(--color-ink);
+    --btn-fg-hover: var(--color-background);
+    --btn-border: var(--color-accent);
+  }
+  .btn-secondary {
+    --btn-bg: var(--color-background);
+    --btn-bg-hover: var(--color-ink);
+    --btn-bg-active: #2c2c30;
+    --btn-fg: var(--color-foreground);
+    --btn-fg-hover: var(--color-background);
+    --btn-border: rgb(20 20 22 / 0.28);
+  }
+  .btn-ghost {
+    --btn-bg: transparent;
+    --btn-bg-hover: rgb(20 20 22 / 0.07);
+    --btn-bg-active: rgb(20 20 22 / 0.12);
+    --btn-fg: var(--color-foreground);
+    --btn-fg-hover: var(--color-accent-hover);
+    --btn-border: transparent;
+  }
+  /* Su fondo rosso o scuro */
+  .btn-on-dark.btn-primary {
+    --btn-bg: var(--color-background);
+    --btn-bg-hover: var(--color-ink);
+    --btn-bg-active: #2c2c30;
+    --btn-fg: var(--color-ink);
+    --btn-fg-hover: var(--color-background);
+    --btn-border: var(--color-background);
+  }
+  .btn-on-dark.btn-secondary {
+    --btn-bg: transparent;
+    --btn-bg-hover: var(--color-background);
+    --btn-bg-active: #e2e2e4;
+    --btn-fg: var(--color-background);
+    --btn-fg-hover: var(--color-ink);
+    --btn-border: rgb(248 248 248 / 0.7);
+  }
+
+  /* Barra di navigazione */
+  .glass-bar {
+    background-color: rgb(248 248 248 / 0.92);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 10px 28px -16px rgb(20 20 22 / 0.35);
+  }
+
+  /* Card: raggio 24px, leggero rialzo in hover (solo mouse) */
+  .card-lift {
+    border-radius: 1.5rem;
+    transition: transform 0.4s var(--ease-out-expo), border-color 0.3s ease;
+  }
+  @media (hover: hover) {
+    .card-lift:hover {
+      transform: translateY(-3px);
+      border-color: rgb(20 20 22 / 0.3);
+    }
+  }
 }
 
-/* Il testo rosso piccolo usa la variante AA (--color-accent-text); fondi, bordi e pulsanti restano Racing Red. */
+/* Il testo rosso piccolo usa la variante AA (--color-accent-text); fondi, bordi e pulsanti restano Rosso Racing. */
 .text-accent {
   color: var(--color-accent-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-lift {
+    transition: none;
+  }
+  .card-lift:hover {
+    transform: none;
+  }
 }
