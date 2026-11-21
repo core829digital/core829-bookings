@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { ConvexClientProvider } from "@/components/ConvexClientProvider";
 import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
+import GlassLayer from "@/components/ui/GlassLayer";
 import "./globals.css";
 
 // Stack tipografico: "Saans" se installato sul dispositivo, altrimenti Inter self-hosted da next/font
@@ -55,6 +56,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <body className="min-h-full flex flex-col">
           <ConvexClientProvider>
             <LocaleProvider>{children}</LocaleProvider>
+            <GlassLayer />
           </ConvexClientProvider>
         </body>
       </html>
