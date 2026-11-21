@@ -13,7 +13,8 @@ import { BookingWidget } from "@/components/BookingWidget";
 // security boundary), so "automatic" brand-matching means the embedder
 // passes its own tokens once via query string, then it matches on every
 // load with no further work — the standard pattern (Calendly, Stripe
-// Elements). ?accent=%23e11d2e&font=Inter&logo=0
+// Elements). ?accent=%23e11d2e&font=Inter&logo=0&lang=it
+// (lang: any supported locale code; see LocaleProvider).
 export default function EmbedBookingPage({
   params,
 }: {
